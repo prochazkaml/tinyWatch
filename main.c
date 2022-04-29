@@ -38,9 +38,17 @@
 #define hour GPIO_GPIOR2
 #define weekday GPIO_GPIOR3
 
-volatile uint8_t year = 22, month = 0, day = 3;
+#define EEBYTE(addr) (*((uint8_t *)(0x1400 + (addr))))
 
-const char hex[16] = "0123456789ABCDEF";
+#define EE_hexlist 0x00
+#define EE_monthlengths 0x10
+#define EE_daylist 0x1C
+#define EE_monthlist 0x23
+#define EE_setuplist 0x2F
+
+char buf[64];
+
+volatile uint8_t year, month, day;
 
 uint8_t charlen(char c) {
 	return smallfont[(c - 32) * 6];
@@ -121,17 +129,20 @@ void slowsysclk() {
 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm);
 }
 
-const char *weekdays[7] = {
-	"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-};
+uint8_t eeprom_read_table_string(uint8_t key, char *dest) {
+	uint8_t start = EEBYTE(key), len = 0;
 
-const char *months[12] = {
-	"January", "February", "March", "April",
-	"May", "June", "July", "August",
-	"September", "October", "November", "December"
-};
+	char c;
 
-const uint8_t monthlengths[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+	while(c = EEBYTE(start++)) {
+		*dest++ = c;
+		len++;
+	}
+
+	*dest = 0;
+
+	return len;
+}
 
 void min_sprintf(char *dest, char *fmt, ...) {
 	va_list ap;
@@ -178,6 +189,10 @@ void min_sprintf(char *dest, char *fmt, ...) {
 
 					break;
 
+				case 'e':
+					dest += eeprom_read_table_string(va_arg(ap, int), dest);
+					break;
+
 /*				case 'c':
 					char c = (char) va_arg(ap, int);
 					printf("char %c\n", c);
@@ -212,7 +227,7 @@ ISR(RTC_CNT_vect) {
 
 				if(weekday >= 7) weekday = 0;
 
-				if(day > ((month == 1 && !(year & 3)) ? 29 : monthlengths[month])) {
+				if(day > ((month == 1 && !(year & 3)) ? 29 : (EEBYTE(EE_monthlengths + month)))) {
 					day = 1;
 					month++;
 
@@ -258,10 +273,6 @@ void update_buttons() {
 	delay_ms(1);
 }
 
-const char *setupsteps[7] = {
-	"Hours", "Minutes", "Seconds", "Weekday", "Day", "Month", "Year"
-};
-
 typedef struct {
 	volatile uint8_t *val;
 	uint8_t min, max, special;
@@ -291,7 +302,8 @@ static inline void setup_menu() {
 			if(needsrefresh) {
 				cls();
 
-				drawstr(setupsteps[i], STR_CENTER, 0);
+				eeprom_read_table_string(EE_setuplist + i, buf);
+				drawstr(buf, STR_CENTER, 0);
 
 				for(uint8_t p = 0; p < 128; p++) {
 					buffer[p + 128] = 0x02;
@@ -299,11 +311,13 @@ static inline void setup_menu() {
 
 				switch(setupdata[i].special) {
 					case 1:
-						drawstr(weekdays[currentval], STR_CENTER, 33);
+						eeprom_read_table_string(EE_daylist + currentval, buf);
+						drawstr(buf, STR_CENTER, 33);
 						break;
 
 					case 2:
-						drawstr(months[currentval], STR_CENTER, 33);
+						eeprom_read_table_string(EE_monthlist + currentval, buf);
+						drawstr(buf, STR_CENTER, 33);
 						break;
 
 					default:
@@ -371,7 +385,7 @@ static inline void calibration_menu() {
 			uint16_t tmpval = val;
 
 			for(uint8_t i = 0; i < 4; i++) {
-				drawchar(hex[nibbles[i]], 64 - 5 * 4 - 3 + i * 5, 33);
+				drawchar(EEBYTE(EE_hexlist + nibbles[i]), 64 - 5 * 4 - 3 + i * 5, 33);
 			}
 
 			drawstr("Done", 64 + 3, 33);
@@ -443,7 +457,7 @@ static inline void calibration_menu() {
 	RTC.CNT = 0;
 	RTC.PER = val;
 	wakeuptimeout = WUT_MAXTIMEOUT;
-	eeprom_write_word((uint16_t *)&USERROW.USERROW0, val);
+	eeprom_write_word((uint16_t *)(&USERROW.USERROW0 - 0x1400), val);
 }
 
 void waitforrelease(uint8_t mask) {
@@ -453,8 +467,6 @@ void waitforrelease(uint8_t mask) {
 
 	fastsysclk();
 }
-
-char buf[64];
 
 int main() {
 	// Set correct interrupt location
@@ -476,11 +488,15 @@ int main() {
 	_PROTECTED_WRITE(CLKCTRL_OSC32KCTRLA, CLKCTRL_RUNSTDBY_bm);
 
 	// Set up RTC
+
+	day = 3;
+	month = 0;
+	year = 22;
 	
 	RTC.CLKSEL = RTC_CLKSEL_INT32K_gc;
 	RTC.INTCTRL = RTC_OVF_bm;
 
-    RTC.PER = eeprom_read_word((uint16_t *)&USERROW.USERROW0);
+    RTC.PER = USERROW.USERROW0 | (USERROW.USERROW1 << 8);
     RTC.CTRLA = RTC_PRESCALER_DIV1_gc | RTC_RTCEN_bm | RTC_RUNSTDBY_bm;
 
 	// Divide the CPU clock
@@ -549,7 +565,7 @@ int main() {
 
 				drawclock(hour, minute, second, CLOCK_Y);
 
-				min_sprintf(buf, "%s, %d %s", weekdays[weekday], day, months[month], year); 
+				min_sprintf(buf, "%e, %d %e", EE_daylist + weekday, day, EE_monthlist + month, year); 
 
 				drawstr(buf, STR_CENTER, 44);
 

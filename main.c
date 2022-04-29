@@ -67,7 +67,7 @@ uint8_t drawchar(char c, uint8_t x, uint8_t y) {
 	while(c-- > 32) addr += charlen(c);
 
 	for(uint8_t i = 0; i < w; i++) {
-		uint8_t b = addr[i];
+		uint8_t b = *addr++;
 
 		for(uint8_t j = 0; j < 8; j++) {
 			if(b & 1) set(x + i, y + j);
@@ -105,7 +105,7 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 
 	for(uint8_t i = 0; i < w; i++) {
 		for(uint8_t i2 = 0; i2 < 3; i2++) {
-			uint8_t b = addr[i * 3 + i2];
+			uint8_t b = *addr++;
 
 			for(uint8_t j = 0; j < 8; j++) {
 				if(b & 1) set(x + i, y + j + (i2 << 3));

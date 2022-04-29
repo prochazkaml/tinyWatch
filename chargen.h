@@ -1,3 +1,8 @@
+#define STR_CENTER 255
+
+#define CLOCK_X ((128 - 112 + 3) / 2)
+#define CLOCK_Y 12
+
 uint8_t charlen(char c) {
 	c -= 32;
 
@@ -63,7 +68,7 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 	}
 }
 
-void drawclock(uint8_t h, uint8_t m, uint8_t s, uint8_t y) {
+static inline void drawclock(uint8_t h, uint8_t m, uint8_t s, uint8_t y) {
 	drawbigchar(h / 10, CLOCK_X + 0, y);
 	drawbigchar(h % 10, CLOCK_X + 16, y);
 	if(!(s & 1)) drawbigchar(10, CLOCK_X + 32, y);

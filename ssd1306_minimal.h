@@ -102,7 +102,7 @@ const unsigned char initialization[] = {
 	0x22, 0, 7
 };
 
-void oled_init() {
+static inline void oled_init() {
 	I2C_WRAPPER_init();
 
 	for (int i = 0; i < sizeof(initialization); i++) {

@@ -51,13 +51,20 @@ char buf[64];
 volatile uint8_t year, month, day;
 
 uint8_t charlen(char c) {
-	return smallfont[(c - 32) * 6];
+	c -= 32;
+
+	if(c & 1)
+		return smallfont[c >> 1] & 0xF;
+	else
+		return smallfont[c >> 1] >> 4;
 }
 
 uint8_t drawchar(char c, uint8_t x, uint8_t y) {
-	const uint8_t *addr = smallfont + (c - 32) * 6;
+	const uint8_t *addr = smallfont + 48;
 
-	uint8_t w = *addr++;
+	uint8_t w = charlen(c);
+
+	while(c-- > 32) addr += charlen(c);
 
 	for(uint8_t i = 0; i < w; i++) {
 		uint8_t b = addr[i];
@@ -90,9 +97,13 @@ void drawstr(const char *c, uint8_t x, uint8_t y) {
 }
 
 void drawbigchar(char c, uint8_t x, uint8_t y) {
-	const uint8_t *addr = bigfont + c * 45;
+	const uint8_t *addr = bigfont + 11;
+	
+	uint8_t w = bigfont[c];
 
-	for(uint8_t i = 0; i < 15; i++) {
+	while(c--) addr += bigfont[c] * 3;
+
+	for(uint8_t i = 0; i < w; i++) {
 		for(uint8_t i2 = 0; i2 < 3; i2++) {
 			uint8_t b = addr[i * 3 + i2];
 
@@ -364,10 +375,10 @@ static inline void setup_menu() {
 static inline void calibration_menu() {
 	uint16_t val = RTC.PER;
 
-	int8_t needsrefresh = 1, done = 0, cursor = 0, selected = 0, nibbles[4];
+	int8_t needsrefresh = 1, done = 0, cursor = 0, selected = 0;
 
 	for(uint8_t i = 0; i < 4; i++) {
-		nibbles[3 - i] = val & 0xF;
+		buf[3 - i] = val & 0xF;
 
 		val >>= 4;
 	}
@@ -385,7 +396,7 @@ static inline void calibration_menu() {
 			uint16_t tmpval = val;
 
 			for(uint8_t i = 0; i < 4; i++) {
-				drawchar(EEBYTE(EE_hexlist + nibbles[i]), 64 - 5 * 4 - 3 + i * 5, 33);
+				drawchar(EEBYTE(EE_hexlist + buf[i]), 64 - 5 * 4 - 3 + i * 5, 33);
 			}
 
 			drawstr("Done", 64 + 3, 33);
@@ -410,14 +421,14 @@ static inline void calibration_menu() {
 
 		if(selected) {
 			if(pressed[0]) {
-				nibbles[cursor]--;
-				if(nibbles[cursor] < 0) nibbles[cursor] = 0xF;
+				buf[cursor]--;
+				if(buf[cursor] < 0) buf[cursor] = 0xF;
 				needsrefresh = 1;
 			}
 
 			if(pressed[2]) {
-				nibbles[cursor]++;
-				if(nibbles[cursor] > 0xF) nibbles[cursor] = 0;
+				buf[cursor]++;
+				if(buf[cursor] > 0xF) buf[cursor] = 0;
 				needsrefresh = 1;
 			}
 
@@ -451,7 +462,7 @@ static inline void calibration_menu() {
 
 	for(uint8_t i = 0; i < 4; i++) {
 		val <<= 4;
-		val |= nibbles[i];
+		val |= buf[i];
 	}
 
 	RTC.CNT = 0;
@@ -490,7 +501,7 @@ int main() {
 	// Set up RTC
 
 	day = 3;
-	month = 0;
+//	month = 0; // Not needed, as it is cleared by default
 	year = 22;
 	
 	RTC.CLKSEL = RTC_CLKSEL_INT32K_gc;

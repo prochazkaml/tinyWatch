@@ -29,7 +29,7 @@
 
 EEMEM uint16_t RTC_PER_calibrated;
 
-volatile uint8_t wakeuptimeout = WUT_MAXTIMEOUT, clockupdated = 1, year = 22, month = 3, day = 23, weekday = 5, hour = 14, minute = 40, second = 0;
+volatile uint8_t wakeuptimeout = WUT_JUSTWOKEUP, clockupdated = 1, year = 22, month = 3, day = 23, weekday = 5, hour = 14, minute = 40, second = 0;
 
 const char hex[16] = "0123456789ABCDEF";
 
@@ -96,6 +96,16 @@ void drawclock(uint8_t h, uint8_t m, uint8_t s, uint8_t y) {
 	if(!(s & 1)) drawbigchar(10, CLOCK_X + 72, y);
 	drawbigchar(s / 10, CLOCK_X + 80, y);
 	drawbigchar(s % 10, CLOCK_X + 96, y);
+}
+
+void delay_ms(uint8_t ms) {
+	while(ms--) {
+		_delay_ms(1);
+	}
+}
+
+void fastsysclk() {
+	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
 }
 
 const char *weekdays[7] = {
@@ -227,21 +237,6 @@ ISR(RTC_CNT_vect) {
 	clockupdated = 1;
 }
 
-void wake_up_display() {
-	// Turn on the display
-
-	PORTB.DIRCLR = 0x03;
-	PORTB.PIN0CTRL |= PORT_PULLUPEN_bm;
-	PORTB.PIN1CTRL |= PORT_PULLUPEN_bm;
-	
-	PORTA.DIRSET = 0x02;
-	PORTA.OUTSET = 0x02;
-
-	_delay_ms(150);
-
-	oled_init();
-}
-
 uint8_t debounce[3] = { 0 }, pressed[3] = { 0 };
 
 void update_buttons() {
@@ -259,7 +254,7 @@ void update_buttons() {
 		}
 	}
 
-	_delay_ms(1);
+	delay_ms(1);
 }
 
 const char *setupsteps[7] = {
@@ -281,7 +276,7 @@ setupdata_t setupdata[] = {
 	{ &year, 0, 99, 0 }
 };
 
-void setup_menu() {
+static inline void setup_menu() {
 	RTC.CTRLA &= ~RTC_RTCEN_bm;
 
 	int8_t needsrefresh, done, currentval;
@@ -351,7 +346,7 @@ void setup_menu() {
 	wakeuptimeout = WUT_MAXTIMEOUT;
 }
 
-void calibration_menu() {
+static inline void calibration_menu() {
 	uint16_t val = RTC.PER;
 
 	int8_t needsrefresh = 1, done = 0, cursor = 0, selected = 0, nibbles[4];
@@ -481,15 +476,27 @@ int main() {
 
 	sei();
 
-	wake_up_display();
-
 	updateleapyear();
 
 	char buf[64];
 
 	while(1) {
 		if(wakeuptimeout == WUT_JUSTWOKEUP) {
-			wake_up_display();
+			// Turn on the display
+
+			PORTB.DIRCLR = 0x03;
+			PORTB.PIN0CTRL |= PORT_PULLUPEN_bm;
+			PORTB.PIN1CTRL |= PORT_PULLUPEN_bm;
+			
+			PORTA.DIRSET = 0x02;
+			PORTA.OUTSET = 0x02;
+
+			delay_ms(150 / 10);
+
+			fastsysclk();
+			
+			oled_init();
+
 			wakeuptimeout = WUT_MAXTIMEOUT;
 		}
 		
@@ -506,34 +513,32 @@ int main() {
 
 			// Enter standby mode
 
-			_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
-
 			SLPCTRL.CTRLA = SLPCTRL_SEN_bm | SLPCTRL_SMODE_STDBY_gc;
 			sleep_cpu();
 		} else {
-			if(!(PORTA.IN & _BV(5)) && !(PORTA.IN & _BV(7))) {
-				while(!(PORTA.IN & _BV(5)) || !(PORTA.IN & _BV(7)));
+			if(!(PORTA.IN & (_BV(5) | _BV(7)))) {
+				while(!(PORTA.IN & (_BV(5) | _BV(7))));
 
-				_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
+				delay_ms(100 / 10);
 
-				_delay_ms(100);
+				fastsysclk();
 
 				setup_menu();
 			}
 
-			if(!(PORTA.IN & _BV(5)) && !(PORTA.IN & _BV(6))) {
-				while(!(PORTA.IN & _BV(5)) || !(PORTA.IN & _BV(6)));
+			if(!(PORTA.IN & (_BV(5) | _BV(6)))) {
+				while(!(PORTA.IN & (_BV(5) | _BV(6))));
 
-				_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
+				delay_ms(100 / 10);
 
-				_delay_ms(100);
+				fastsysclk();				
 
 				calibration_menu();
 			}
 
 			if(clockupdated) {
-				_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
-
+				fastsysclk();
+				
 				cls();
 
 				drawclock(hour, minute, second, CLOCK_Y);
@@ -541,10 +546,6 @@ int main() {
 				min_sprintf(buf, "%s, %d %s", weekdays[weekday], day, months[month], year); 
 
 				drawstr(buf, STR_CENTER, 44);
-
-//				min_sprintf(buf, "%d %d %d", PORTA.IN & (_BV(5) | _BV(6) | _BV(7)), (_BV(5) | _BV(6) | _BV(7)), wakeuptimeout);
-
-//				drawstr(buf, STR_CENTER, 56);
 
 				refresh();
 

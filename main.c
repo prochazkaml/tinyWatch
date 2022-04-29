@@ -29,7 +29,18 @@
 
 EEMEM uint16_t RTC_PER_calibrated;
 
-volatile uint8_t wakeuptimeout = WUT_JUSTWOKEUP, clockupdated = 1, year = 22, month = 3, day = 23, weekday = 5, hour = 14, minute = 40, second = 0;
+#define wakeuptimeout GPIO_GPIOR0
+#define clockupdated GPIO_GPIOR1
+
+// The ATtiny1614 doesn't even have PORTC, so we can just abuse these registers
+
+#define second VPORTC_DIR
+#define minute VPORTC_OUT
+
+#define hour GPIO_GPIOR2
+#define weekday GPIO_GPIOR3
+
+volatile uint8_t year = 22, month = 0, day = 3;
 
 const char hex[16] = "0123456789ABCDEF";
 
@@ -100,7 +111,7 @@ void drawclock(uint8_t h, uint8_t m, uint8_t s, uint8_t y) {
 
 void delay_ms(uint8_t ms) {
 	while(ms--) {
-		_delay_ms(1);
+		_delay_us(995); // 2 bytes smaller than _delay_ms(1) :)
 	}
 }
 
@@ -226,22 +237,22 @@ ISR(RTC_CNT_vect) {
 	}
 
 	RTC.INTFLAGS |= RTC_OVF_bm;
-	clockupdated = 1;
+	clockupdated |= 1;
 }
 
-uint8_t debounce[3] = { 0 }, pressed[3] = { 0 };
+uint8_t pressed[6] = { 0 };
 
 void update_buttons() {
 	for(uint8_t b = 0; b < 3; b++) {
 		if(!(PORTA.IN & _BV(b + 5))) {
-			if(!debounce[b])
+			if(!pressed[b + 3])
 				pressed[b] = 1;
 			else
 				pressed[b] = 0;
 
-			debounce[b] = 30;
+			pressed[b + 3] = 30;
 		} else {
-			if(debounce[b]) debounce[b]--;
+			if(pressed[b + 3]) pressed[b + 3]--;
 			pressed[b] = 0;
 		}
 	}
@@ -332,7 +343,7 @@ static inline void setup_menu() {
 	}
 
 	RTC.CNT = 0;
-	clockupdated = 1;
+	clockupdated |= 1;
 
 	RTC.CTRLA |= RTC_RTCEN_bm;
 	wakeuptimeout = WUT_MAXTIMEOUT;
@@ -436,6 +447,16 @@ static inline void calibration_menu() {
 	eeprom_update_word(&RTC_PER_calibrated, val);
 }
 
+void waitforrelease(uint8_t mask) {
+	while(!(PORTA.IN & mask));
+
+	delay_ms(100 / 10);
+
+	fastsysclk();
+}
+
+char buf[64];
+
 int main() {
 	// Set correct interrupt location
 
@@ -461,16 +482,18 @@ int main() {
 	RTC.INTCTRL = RTC_OVF_bm;
 
     RTC.PER = eeprom_read_word(&RTC_PER_calibrated);
-//    RTC.PER = 0x8000;
     RTC.CTRLA = RTC_PRESCALER_DIV1_gc | RTC_RTCEN_bm | RTC_RUNSTDBY_bm;
 
 	// Divide the CPU clock
 
 	sei();
 
-	char buf[64];
+	wakeuptimeout = WUT_JUSTWOKEUP;
+	clockupdated |= 1;
 
 	while(1) {
+		slowsysclk();
+
 		if(wakeuptimeout == WUT_JUSTWOKEUP) {
 			// Turn on the display
 
@@ -481,10 +504,10 @@ int main() {
 			PORTA.DIRSET = 0x02;
 			PORTA.OUTSET = 0x02;
 
+			delay_ms(150 / 10);
+
 			fastsysclk();
 			
-			delay_ms(150);
-
 			oled_init();
 
 			wakeuptimeout = WUT_MAXTIMEOUT;
@@ -509,26 +532,18 @@ int main() {
 			sleep_cpu();
 		} else {
 			if(!(PORTA.IN & (_BV(5) | _BV(7)))) {
-				while(!(PORTA.IN & (_BV(5) | _BV(7))));
-
-				delay_ms(100 / 10);
-
-				fastsysclk();
+				waitforrelease(_BV(5) | _BV(7));
 
 				setup_menu();
 			}
 
 			if(!(PORTA.IN & (_BV(5) | _BV(6)))) {
-				while(!(PORTA.IN & (_BV(5) | _BV(6))));
-
-				delay_ms(100 / 10);
-
-				fastsysclk();				
+				waitforrelease(_BV(5) | _BV(6));
 
 				calibration_menu();
 			}
 
-			if(clockupdated) {
+			if(clockupdated & 1) {
 				fastsysclk();
 				
 				cls();
@@ -541,10 +556,8 @@ int main() {
 
 				refresh();
 
-				clockupdated = 0;
+				clockupdated &= ~1;
 			}
-
-			slowsysclk();
 		}
 	}
 }

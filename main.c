@@ -216,20 +216,15 @@ ISR(RTC_CNT_vect) {
 
 	if(wakeuptimeout <= WUT_MAXTIMEOUT && wakeuptimeout) wakeuptimeout--;
 
-	RTC.INTFLAGS |= RTC_OVF_bm;
-	clockupdated = 1;
-}
-
-ISR(PORTA_PORT_vect) {
-	wakeuptimeout = WUT_JUSTWOKEUP;
-
-	// Disable pin change interrupts on PA5..7
-
-	for(uint8_t i = 5; i <= 7; i++) {
-		*((uint8_t *)&PORTA + 0x10 + i) &= ~PORT_ISC_gm;
+	if((PORTA.IN & (_BV(5) | _BV(6) | _BV(7))) != (_BV(5) | _BV(6) | _BV(7))) {
+		if(wakeuptimeout)
+			wakeuptimeout = WUT_MAXTIMEOUT;
+		else
+			wakeuptimeout = WUT_JUSTWOKEUP;
 	}
 
-	PORTA.INTFLAGS = 0xFF;
+	RTC.INTFLAGS |= RTC_OVF_bm;
+	clockupdated = 1;
 }
 
 void wake_up_display() {
@@ -509,12 +504,6 @@ int main() {
 			PORTB.OUTCLR = 0x03;
 			PORTB.DIRSET = 0x03;
 
-			// Enable pin change interrupts on PA5..7, so that we can wake up on command
-
-			for(uint8_t i = 5; i <= 7; i++) {
-				*((uint8_t *)&PORTA + 0x10 + i) |= PORT_ISC0_bm;
-			}
-
 			// Enter standby mode
 
 			_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
@@ -522,8 +511,6 @@ int main() {
 			SLPCTRL.CTRLA = SLPCTRL_SEN_bm | SLPCTRL_SMODE_STDBY_gc;
 			sleep_cpu();
 		} else {
-			if((PORTA.IN & (_BV(5) | _BV(6) | _BV(7))) != (_BV(5) | _BV(6) | _BV(7))) wakeuptimeout = WUT_MAXTIMEOUT;
-
 			if(!(PORTA.IN & _BV(5)) && !(PORTA.IN & _BV(7))) {
 				while(!(PORTA.IN & _BV(5)) || !(PORTA.IN & _BV(7)));
 

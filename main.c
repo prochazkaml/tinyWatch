@@ -108,6 +108,10 @@ void fastsysclk() {
 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
 }
 
+void slowsysclk() {
+	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm);
+}
+
 const char *weekdays[7] = {
 	"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 };
@@ -491,13 +495,15 @@ int main() {
 			PORTA.DIRSET = 0x02;
 			PORTA.OUTSET = 0x02;
 
-			delay_ms(150 / 10);
-
 			fastsysclk();
 			
+			delay_ms(150);
+
 			oled_init();
 
 			wakeuptimeout = WUT_MAXTIMEOUT;
+
+			slowsysclk();
 		}
 		
 		if(!wakeuptimeout) {
@@ -550,9 +556,9 @@ int main() {
 				refresh();
 
 				clockupdated = 0;
-
-				_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm);
 			}
+
+			slowsysclk();
 		}
 	}
 }

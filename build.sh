@@ -12,3 +12,7 @@ if [ -f main.elf ]; then
 else
 	echo "Sorry, but something went horribly wrong."
 fi
+
+# Dump .data: avr-objdump -s -j .data main.elf
+# Dump .rodata: avr-objdump -s -j .rodata main.elf
+# Disassemble: avr-objdump -S main.elf

@@ -122,17 +122,7 @@ const char *months[12] = {
 	"September", "October", "November", "December"
 };
 
-volatile uint8_t monthlengths[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-void updateleapyear() {
-	if(year % 4) {
-		monthlengths[1] = 28;
-	} else {
-		monthlengths[1] = 29;
-
-//		if(!(year % 100) && (year % 400)) monthlengths[1] = 28; // Not necessary, I'm gonna be dead by that time anyway
-	}
-}
+const uint8_t monthlengths[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 void min_sprintf(char *dest, char *fmt, ...) {
 	va_list ap;
@@ -213,15 +203,13 @@ ISR(RTC_CNT_vect) {
 
 				if(weekday >= 7) weekday = 0;
 
-				if(day > monthlengths[month]) {
+				if(day > ((month == 1 && !(year & 3)) ? 29 : monthlengths[month])) {
 					day = 1;
 					month++;
 
 					if(month >= 12) {
 						month = 0;
 						year++;
-
-						updateleapyear();
 					}
 				}
 			}
@@ -479,8 +467,6 @@ int main() {
 	// Divide the CPU clock
 
 	sei();
-
-	updateleapyear();
 
 	char buf[64];
 

@@ -27,8 +27,6 @@
 #define WUT_MAXTIMEOUT 8
 #define WUT_JUSTWOKEUP 0xFF
 
-EEMEM uint16_t RTC_PER_calibrated;
-
 #define wakeuptimeout GPIO_GPIOR0
 #define clockupdated GPIO_GPIOR1
 
@@ -442,9 +440,10 @@ static inline void calibration_menu() {
 		val |= nibbles[i];
 	}
 
+	RTC.CNT = 0;
 	RTC.PER = val;
 	wakeuptimeout = WUT_MAXTIMEOUT;
-	eeprom_write_word(&RTC_PER_calibrated, val);
+	eeprom_write_word((uint16_t *)&USERROW.USERROW0, val);
 }
 
 void waitforrelease(uint8_t mask) {
@@ -481,7 +480,7 @@ int main() {
 	RTC.CLKSEL = RTC_CLKSEL_INT32K_gc;
 	RTC.INTCTRL = RTC_OVF_bm;
 
-    RTC.PER = eeprom_read_word(&RTC_PER_calibrated);
+    RTC.PER = eeprom_read_word((uint16_t *)&USERROW.USERROW0);
     RTC.CTRLA = RTC_PRESCALER_DIV1_gc | RTC_RTCEN_bm | RTC_RUNSTDBY_bm;
 
 	// Divide the CPU clock

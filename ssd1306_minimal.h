@@ -34,20 +34,6 @@ void clr(uint8_t x, uint8_t y) {
 	write(x, y, 0);
 }
 
-/*
-uint8_t *addr(uint8_t x, uint8_t y) {
-//	y &= 0x3f;
-	return buffer + (((y & 0x38) << 4) | (x & 0x7f));
-}
-
-void set(uint8_t x, uint8_t y) {
-	*addr(x, y) |= 1 << (y & 7);
-}
-
-void clr(uint8_t x, uint8_t y) {
-	*addr(x, y) &= ~(1 << (y & 7));
-}
-*/
 void cls() {
 	for(int i = 0; i < 1024; i++) {
 		buffer[i] = 0;

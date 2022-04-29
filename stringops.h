@@ -1,22 +1,19 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdarg.h>
+uint8_t eeprom_read_table_string(uint8_t key, char *dest) {
+	uint8_t start = EEBYTE(key), len = 0;
 
-volatile int8_t year = 22, month = 0, day = 1, weekday = 1, hour = 12, minute = 0, second = 0;
+	char c;
 
-const char *weekdays[7] = {
-	"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-};
+	while(c = EEBYTE(start++)) {
+		*dest++ = c;
+		len++;
+	}
 
-const char *months[12] = {
-	"January", "February", "March", "April",
-	"May", "June", "July", "August",
-	"September", "October", "November", "December"
-};
+	*dest = 0;
 
-int min_sprintf(char *dest, char *fmt, ...) {
-    char *og_dest = dest;
-	
+	return len;
+}
+
+void min_sprintf(char *dest, char *fmt, ...) {
 	va_list ap;
 	va_start(ap, fmt);
 
@@ -61,6 +58,10 @@ int min_sprintf(char *dest, char *fmt, ...) {
 
 					break;
 
+				case 'e':
+					dest += eeprom_read_table_string(va_arg(ap, int), dest);
+					break;
+
 /*				case 'c':
 					char c = (char) va_arg(ap, int);
 					printf("char %c\n", c);
@@ -69,22 +70,10 @@ int min_sprintf(char *dest, char *fmt, ...) {
 				default:
 					*dest++ = p;
 			}
-
-//			*dest++ = c;
 		} else {
 			*dest++ = c;
 		}
 	}
 
 	*dest = 0;
-
-	return *dest - *og_dest;
-}
-
-int main() {
-	char buf[64];
-
-	min_sprintf(buf, "%s, %d %s", weekdays[weekday], day, months[month], year); 
-
-	printf("%s\n", buf);
 }

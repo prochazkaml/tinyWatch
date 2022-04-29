@@ -35,7 +35,7 @@ void cls() {
 	}
 }
 
-unsigned char initialization[] = {
+const unsigned char initialization[] = {
 	// Display off
 	0xAE,
 

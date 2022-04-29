@@ -269,7 +269,7 @@ typedef struct {
 	uint8_t min, max, special;
 } setupdata_t;
 
-setupdata_t setupdata[] = {
+const setupdata_t setupdata[] = {
 	{ &hour, 0, 23, 0 },
 	{ &minute, 0, 59, 0 },
 	{ &second, 0, 59, 0 },
@@ -444,7 +444,7 @@ static inline void calibration_menu() {
 
 	RTC.PER = val;
 	wakeuptimeout = WUT_MAXTIMEOUT;
-	eeprom_update_word(&RTC_PER_calibrated, val);
+	eeprom_write_word(&RTC_PER_calibrated, val);
 }
 
 void waitforrelease(uint8_t mask) {

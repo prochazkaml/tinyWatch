@@ -3,8 +3,6 @@
 
 #define OLED_ADDR (0x3c << 1)
 
-#define TWI0_BAUD(F_SCL) ((((float)F_CPU / (float)F_SCL)) - 10 )
-
 // https://www.avrfreaks.net/comment/2390341#comment-2390341
 
 static inline void I2C_WRAPPER_init() {

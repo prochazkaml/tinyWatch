@@ -1,8 +1,3 @@
-#define STR_CENTER 255
-
-#define CLOCK_X ((128 - 112 + 3) / 2)
-#define CLOCK_Y 12
-
 uint8_t charlen(char c) {
 	c -= 32;
 

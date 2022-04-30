@@ -1,6 +1,3 @@
-#define WUT_MAXTIMEOUT 8
-#define WUT_JUSTWOKEUP 0xFF
-
 ISR(RTC_CNT_vect) {
 	second++;
 

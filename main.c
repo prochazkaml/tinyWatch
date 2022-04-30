@@ -40,6 +40,14 @@ char buf[64];
 
 volatile uint8_t year, month, day;
 
+#define STR_CENTER 255
+
+#define CLOCK_X ((128 - 112 + 3) / 2)
+#define CLOCK_Y 12
+
+#define WUT_MAXTIMEOUT 8
+#define WUT_JUSTWOKEUP 0xFF
+
 #include "sysutil.h"
 #include "rtcisr.h"
 #include "stringops.h"

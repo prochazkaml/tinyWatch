@@ -1,4 +1,4 @@
-#define F_CPU (20000000/6)
+#define F_CPU (20000000/4)
 
 #ifndef __AVR_ATtiny1614__
 #define __AVR_ATtiny1614__
@@ -103,15 +103,15 @@ int main() {
 			PORTA.DIRSET = 0x02;
 			PORTA.OUTSET = 0x02;
 
-			delay_ms(150 / 10);
+			delay_ms(150 / 16);
 
 			fastsysclk();
 			
 			oled_init();
 
-			wakeuptimeout = WUT_MAXTIMEOUT;
-
 			slowsysclk();
+
+			wakeuptimeout = WUT_MAXTIMEOUT;
 		}
 		
 		if(!wakeuptimeout) {
@@ -149,7 +149,7 @@ int main() {
 
 				drawclock(hour, minute, second, CLOCK_Y);
 
-				min_sprintf(buf, "%e, %d %e", EE_daylist + weekday, day, EE_monthlist + month, year); 
+				min_sprintf(buf, "%e, %d %e", EE_daylist + weekday, day, EE_monthlist + month); 
 
 				drawstr(buf, STR_CENTER, 44);
 

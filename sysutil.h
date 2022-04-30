@@ -2,12 +2,12 @@
 
 void delay_ms(uint8_t ms) {
 	while(ms--) {
-		_delay_us(995); // 2 bytes smaller than _delay_ms(1) :)
+		_delay_us(997); // 2 bytes smaller than _delay_ms(1) :)
 	}
 }
 
 void fastsysclk() {
-	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_6X_gc | CLKCTRL_PEN_bm);
+	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, CLKCTRL_PDIV_4X_gc | CLKCTRL_PEN_bm);
 }
 
 void slowsysclk() {

@@ -6,7 +6,7 @@
 // https://www.avrfreaks.net/comment/2390341#comment-2390341
 
 static inline void I2C_WRAPPER_init() {
-	TWI0.MBAUD = 0;	        // set MBAUD register for 400kHz (?)
+	TWI0.MBAUD = 3;	        // set MBAUD register for 400kHz (?)
 	TWI0.MCTRLA = 1 << TWI_ENABLE_bp			/* Enable TWI Master: enabled */
 	| 0 << TWI_QCEN_bp					/* Quick Command Enable: disabled */
 	| 0 << TWI_RIEN_bp					/* Read Interrupt Enable: disabled */

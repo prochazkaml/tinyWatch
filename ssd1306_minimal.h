@@ -1,45 +1,6 @@
 #ifndef SSD1306_MINIMAL_H
 #define SSD1306_MINIMAL_H
 
-uint8_t buffer[1024];
-
-void refresh() {
-	unsigned char *p = buffer;
-	for (int i = 0; i < 64; i++) {
-		I2C_WRAPPER_beginTransmission();
-		I2C_WRAPPER_write(0x40);
-		for(int i = 0; i < 16; i++) {
-			I2C_WRAPPER_write(*p);
-			p++;
-		}
-		I2C_WRAPPER_endTransmission();
-	}  
-}
-
-void write(uint8_t x, uint8_t y, uint8_t c) {
-	char *addr = buffer + (((y & 0x38) << 4) | (x & 0x7f));
-	uint8_t bit = 1 << (y & 7);
-
-	if(c)
-		*addr |= bit;
-	else
-		*addr &= ~(bit);
-}
-
-void set(uint8_t x, uint8_t y) {
-	write(x, y, 1);
-}
-
-void clr(uint8_t x, uint8_t y) {
-	write(x, y, 0);
-}
-
-void cls() {
-	for(int i = 0; i < 1024; i++) {
-		buffer[i] = 0;
-	}
-}
-
 const unsigned char initialization[] = {
 	// Display off
 	0xAE,
@@ -105,11 +66,57 @@ const unsigned char initialization[] = {
 static inline void oled_init() {
 	I2C_WRAPPER_init();
 
-	for (int i = 0; i < sizeof(initialization); i++) {
+	for (uint8_t i = 0; i < sizeof(initialization); i++) {
 		I2C_WRAPPER_beginTransmission();
 		I2C_WRAPPER_write(0x80);
 		I2C_WRAPPER_write(initialization[i]);
 		I2C_WRAPPER_endTransmission();
+	}
+}
+
+uint8_t buffer[1024];
+
+void refresh() {
+	for (uint8_t i = sizeof(initialization) - 6; i < sizeof(initialization); i++) {
+		I2C_WRAPPER_beginTransmission();
+		I2C_WRAPPER_write(0x80);
+		I2C_WRAPPER_write(initialization[i]);
+		I2C_WRAPPER_endTransmission();
+	}
+
+	unsigned char *p = buffer;
+	for (int i = 0; i < 64; i++) {
+		I2C_WRAPPER_beginTransmission();
+		I2C_WRAPPER_write(0x40);
+		for(int i = 0; i < 16; i++) {
+			I2C_WRAPPER_write(*p);
+			p++;
+		}
+		I2C_WRAPPER_endTransmission();
+	}  
+}
+
+void write(uint8_t x, uint8_t y, uint8_t c) {
+	char *addr = buffer + (((y & 0x38) << 4) | (x & 0x7f));
+	uint8_t bit = 1 << (y & 7);
+
+	if(c)
+		*addr |= bit;
+	else
+		*addr &= ~(bit);
+}
+
+void set(uint8_t x, uint8_t y) {
+	write(x, y, 1);
+}
+
+void clr(uint8_t x, uint8_t y) {
+	write(x, y, 0);
+}
+
+void cls() {
+	for(int i = 0; i < 1024; i++) {
+		buffer[i] = 0;
 	}
 }
 

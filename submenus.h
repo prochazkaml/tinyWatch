@@ -206,9 +206,9 @@ static inline void calibration_menu() {
 }
 
 void waitforrelease(uint8_t mask) {
-	while(!(PORTA.IN & mask));
+	while((PORTA.IN & mask) != mask);
 
-	delay_ms(100 / 16);
+	delay_ms(200 / 16);
 
 	fastsysclk();
 }

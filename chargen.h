@@ -56,7 +56,9 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 			uint8_t b = *addr++;
 
 			for(uint8_t j = 0; j < 8; j++) {
-				if(b & 1) set(x + i, y + j + (i2 << 3));
+				if(b & 1) {
+					for(uint8_t o = 0; o < 3; o++) set(o + x + i, y + j + (i2 << 3));
+				}
 				b >>= 1;
 			}
 		}

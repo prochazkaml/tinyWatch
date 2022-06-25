@@ -2,7 +2,7 @@ uint8_t pressed[6] = { 0 };
 
 void update_buttons() {
 	for(uint8_t b = 0; b < 3; b++) {
-		if(!(PORTA.IN & _BV(b + 5))) {
+		if(!(VPORTA_IN & _BV(b + 5))) {
 			if(!pressed[b + 3])
 				pressed[b] = 1;
 			else
@@ -206,7 +206,7 @@ static inline void calibration_menu() {
 }
 
 void waitforrelease(uint8_t mask) {
-	while((PORTA.IN & mask) != mask);
+	while((VPORTA_IN & mask) != mask);
 
 	delay_ms(200 / 16);
 

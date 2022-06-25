@@ -61,8 +61,8 @@ int main() {
 
 	// Set pullups on all pins, otherwise they will oscillate → consume power
 
-	PORTA.DIRCLR = 0xFF;
-	PORTB.DIRCLR = 0xFF;
+	VPORTA_DIR = 0;
+	VPORTB_DIR = 0;
 
 	for(uint8_t i = 0; i < 8; i++) {
 		*((uint8_t *)&PORTA + 0x10 + i) |= PORT_PULLUPEN_bm;
@@ -100,8 +100,8 @@ int main() {
 			PORTB.PIN0CTRL |= PORT_PULLUPEN_bm;
 			PORTB.PIN1CTRL |= PORT_PULLUPEN_bm;
 			
-			PORTA.DIRSET = 0x02;
-			PORTA.OUTSET = 0x02;
+			VPORTA_DIR |= 0x02;
+			VPORTA_OUT |= 0x02;
 
 			delay_ms(150 / 16);
 
@@ -117,7 +117,7 @@ int main() {
 		if(!wakeuptimeout) {
 			// After a certain cutoff period, turn off the display
 
-			PORTA.OUTCLR = 0x02;
+			VPORTA_OUT &= ~0x02;
 
 			PORTB.PIN0CTRL &= ~PORT_PULLUPEN_bm;
 			PORTB.PIN1CTRL &= ~PORT_PULLUPEN_bm;
@@ -130,13 +130,13 @@ int main() {
 			SLPCTRL.CTRLA = SLPCTRL_SEN_bm | SLPCTRL_SMODE_STDBY_gc;
 			sleep_cpu();
 		} else {
-			if(!(PORTA.IN & (_BV(5) | _BV(7)))) {
+			if(!(VPORTA_IN & (_BV(5) | _BV(7)))) {
 				waitforrelease(_BV(5) | _BV(7));
 
 				setup_menu();
 			}
 
-			if(!(PORTA.IN & (_BV(5) | _BV(6)))) {
+			if(!(VPORTA_IN & (_BV(5) | _BV(6)))) {
 				waitforrelease(_BV(5) | _BV(6));
 
 				calibration_menu();

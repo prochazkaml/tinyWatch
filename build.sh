@@ -2,7 +2,7 @@
 
 [ $# -ne 2 ] && echo "Usage: $0 projectname mcu" && exit 1
 
-avr-gcc -g -Os -mmcu=attiny1614 -c -o $1.o $1.c
+avr-gcc -Os -mmcu=attiny1614 -c -o $1.o $1.c
 avr-gcc -Os -mmcu=attiny1614 -o $1.elf crtattiny1614.o $1.o -Wl,--relax,--gc-sections -nostartfiles
 #avr-objcopy -j .text -j .data -O binary $1.elf $1.bin
 #sudo avrdude -U flash:w:$1.elf:e -c usbasp -p $2

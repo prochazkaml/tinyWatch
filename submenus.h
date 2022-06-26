@@ -82,7 +82,6 @@ static inline void setup_menu() {
 				needsrefresh = 1;
 
 				if(currentval < setupdata[i].min) currentval = setupdata[i].max;
-
 			}
 
 			if(pressed[2]) {

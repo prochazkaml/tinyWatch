@@ -57,21 +57,32 @@ volatile uint8_t year, month, day;
 int main() {
 	// Set correct interrupt location
 
-	_PROTECTED_WRITE(CPUINT_CTRLA, CPUINT_IVSEL_bm);
+	PROTECTED_WRITE(CPUINT_CTRLA, CPUINT_IVSEL_bm);
 
 	// Set pullups on all pins, otherwise they will oscillate → consume power
 
 	VPORTA_DIR = 0;
 	VPORTB_DIR = 0;
 
-	for(uint8_t i = 0; i < 8; i++) {
-		*((uint8_t *)&PORTA + 0x10 + i) |= PORT_PULLUPEN_bm;
-		*((uint8_t *)&PORTB + 0x10 + i) |= PORT_PULLUPEN_bm;
-	}
+	asm volatile(
+		"ldi r24, %[PULLUPEN]\n"
+		"ldi r25, 8\n"
+
+		"main_pullup_loop:\n"
+		"st X+, r24\n"
+		"st Y+, r24\n"
+
+		"dec r25\n"
+		"brne main_pullup_loop\n"
+		::
+		"x" (&PORTA_PIN0CTRL),
+		"y" (&PORTB_PIN1CTRL),
+		[PULLUPEN] "M" (PORT_PULLUPEN_bm)
+	);
 
 	// Enable the 32.786 kHz clock when in standby
 
-	_PROTECTED_WRITE(CLKCTRL_OSC32KCTRLA, CLKCTRL_RUNSTDBY_bm);
+	PROTECTED_WRITE(CLKCTRL_OSC32KCTRLA, CLKCTRL_RUNSTDBY_bm);
 
 	// Set up RTC
 
@@ -97,8 +108,8 @@ int main() {
 			// Turn on the display
 
 			PORTB.DIRCLR = 0x03;
-			PORTB.PIN0CTRL |= PORT_PULLUPEN_bm;
-			PORTB.PIN1CTRL |= PORT_PULLUPEN_bm;
+			PORTB.PIN0CTRL = PORT_PULLUPEN_bm;
+			PORTB.PIN1CTRL = PORT_PULLUPEN_bm;
 			
 			VPORTA_DIR |= 0x02;
 			VPORTA_OUT |= 0x02;
@@ -119,8 +130,8 @@ int main() {
 
 			VPORTA_OUT &= ~0x02;
 
-			PORTB.PIN0CTRL &= ~PORT_PULLUPEN_bm;
-			PORTB.PIN1CTRL &= ~PORT_PULLUPEN_bm;
+			PORTB.PIN0CTRL = 0;
+			PORTB.PIN1CTRL = 0;
 	
 			PORTB.OUTCLR = 0x03;
 			PORTB.DIRSET = 0x03;
@@ -149,7 +160,7 @@ int main() {
 
 				drawclock(hour, minute, second, CLOCK_Y);
 
-				min_sprintf(buf, "%e, %d %e", EE_daylist + weekday, day, EE_monthlist + month); 
+				min_sprintf(buf, "\x03, \x02 \x03", EE_daylist + weekday, day, EE_monthlist + month); 
 
 				drawstr(buf, STR_CENTER, 44);
 

@@ -20,58 +20,53 @@ void min_sprintf(char *dest, char *fmt, ...) {
 	char c, p;
 	
 	while(c = *fmt++) {
-		if(c == '%') {
-			switch (p = *fmt++) {
-				case 's':
-					char *s = va_arg(ap, char *);
+		switch(c) {
+			case '\x01': // %s
+				char *s = va_arg(ap, char *);
 
-					while(p = *s++) {
-						*dest++ = p;
-					}
-
-					break;
-
-				case 'd':
-					int d = va_arg(ap, int);
-
-					if(d < 0) {
-						*dest++ = '-';
-						d *= (-1);
-					}
-
-					char buf[6];
-
-					buf[0] = '0';
-					char max = 0;
-
-					while(d > 0) {
-						buf[max++] = '0' + d % 10;
-
-						d /= 10;
-					}
-
-					if(!max) max = 1;
-
-					for(char i = max - 1; i >= 0; i--) {
-						*dest++ = buf[i];
-					}
-
-					break;
-
-				case 'e':
-					dest += eeprom_read_table_string(va_arg(ap, int), dest);
-					break;
-
-/*				case 'c':
-					char c = (char) va_arg(ap, int);
-					printf("char %c\n", c);
-					break;*/
-
-				default:
+				while(p = *s++) {
 					*dest++ = p;
-			}
-		} else {
-			*dest++ = c;
+				}
+
+				break;
+
+			case '\x02': // %d
+				int d = va_arg(ap, int);
+
+				if(d < 0) {
+					*dest++ = '-';
+					d *= (-1);
+				}
+
+				char buf[6];
+
+				buf[0] = '0';
+				char max = 0;
+
+				while(d > 0) {
+					buf[max++] = '0' + d % 10;
+
+					d /= 10;
+				}
+
+				if(!max) max = 1;
+
+				for(char i = max - 1; i >= 0; i--) {
+					*dest++ = buf[i];
+				}
+
+				break;
+
+			case '\x03': // %s from EEPROM
+				dest += eeprom_read_table_string(va_arg(ap, int), dest);
+				break;
+
+			case '\x04': // %c
+				*dest++ = (char)va_arg(ap, int);
+				break;
+
+			default:
+				*dest++ = c;
 		}
 	}
 

@@ -16,7 +16,7 @@ ISR(RTC_CNT_vect) {
 
 				if(weekday >= 7) weekday = 0;
 
-				if(day > ((month == 1 && !(year & 3)) ? 29 : (EEBYTE(EE_monthlengths + month)))) {
+				if(day > EEBYTE(EE_monthlengths + month)) {
 					day = 1;
 					month++;
 
@@ -31,7 +31,7 @@ ISR(RTC_CNT_vect) {
 
 	if(wakeuptimeout <= WUT_MAXTIMEOUT && wakeuptimeout) wakeuptimeout--;
 
-	if((PORTA.IN & (_BV(5) | _BV(6) | _BV(7))) != (_BV(5) | _BV(6) | _BV(7))) {
+	if((VPORTA_IN & (_BV(5) | _BV(6) | _BV(7))) != (_BV(5) | _BV(6) | _BV(7))) {
 		if(wakeuptimeout)
 			wakeuptimeout = WUT_MAXTIMEOUT;
 		else

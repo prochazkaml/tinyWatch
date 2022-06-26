@@ -66,7 +66,7 @@ const unsigned char initialization[] = {
 static inline void oled_init() {
 	I2C_WRAPPER_init();
 
-	for (uint8_t i = 0; i < sizeof(initialization); i++) {
+	for (uint8_t i = 0; i < sizeof(initialization) - 6; i++) {
 		I2C_WRAPPER_beginTransmission();
 		I2C_WRAPPER_write(0x80);
 		I2C_WRAPPER_write(initialization[i]);
@@ -97,7 +97,7 @@ void refresh() {
 }
 
 void write(uint8_t x, uint8_t y, uint8_t c) {
-	char *addr = buffer + (((y & 0x38) << 4) | (x & 0x7f));
+	char *addr = buffer + (((y & 0x38) << 4) | x);
 	uint8_t bit = 1 << (y & 7);
 
 	if(c)

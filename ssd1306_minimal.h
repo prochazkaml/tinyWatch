@@ -1,6 +1,8 @@
 #ifndef SSD1306_MINIMAL_H
 #define SSD1306_MINIMAL_H
 
+uint8_t buffer[1024] __attribute__((section (".framebuffer")));
+
 const unsigned char initialization[] = {
 	// Display off
 	0xAE,
@@ -73,8 +75,6 @@ static inline void oled_init() {
 		I2C_WRAPPER_endTransmission();
 	}
 }
-
-uint8_t buffer[1024];
 
 void refresh() {
 	for (uint8_t i = sizeof(initialization) - 6; i < sizeof(initialization); i++) {

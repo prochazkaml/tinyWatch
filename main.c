@@ -86,7 +86,7 @@ int main() {
 
 	// Set up RTC
 
-	day = 3;
+	day = 1;
 //	month = 0; // Not needed, as it is cleared by default
 	year = 22;
 	

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 avr-gcc -Os -mmcu=attiny1614 -c -o main.o main.c
-avr-gcc -Os -mmcu=attiny1614 -o main.elf crtattiny1614.o main.o -Wl,--relax,--gc-sections -nostartfiles
+avr-gcc -Os -mmcu=attiny1614 -o main.elf crtattiny1614.o main.o -Wl,-Tavrxmega3.x -Wl,--relax,--gc-sections -nostartfiles
 
 if [ -f main.elf ]; then
 	avr-size main.elf

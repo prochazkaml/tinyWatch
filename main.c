@@ -160,7 +160,7 @@ int main() {
 
 				drawclock(hour, minute, second, CLOCK_Y);
 
-				min_sprintf(buf, "\x03, \x02 \x03", EE_daylist + weekday, day, EE_monthlist + month); 
+				min_sprintf("\x03, \x02 \x03", EE_daylist + weekday, day, EE_monthlist + month); 
 
 				drawstr(buf, STR_CENTER, 44);
 

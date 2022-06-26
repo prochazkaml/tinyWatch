@@ -13,7 +13,9 @@ uint8_t eeprom_read_table_string(uint8_t key, char *dest) {
 	return len;
 }
 
-void min_sprintf(char *dest, char *fmt, ...) {
+void min_sprintf(char *fmt, ...) {
+	char *dest = buf;
+
 	va_list ap;
 	va_start(ap, fmt);
 

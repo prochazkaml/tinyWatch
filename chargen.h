@@ -47,7 +47,7 @@ void drawstr(const char *c, uint8_t x, uint8_t y) {
 void drawbigchar(char c, uint8_t x, uint8_t y) {
 	const uint8_t *addr = bigfont + 11 + bigfont[c];
 	
-	uint8_t i = 0, i2 = 0, b, bak, skip = 0;
+	uint8_t bank = 0, b, bak, skip = 0;
 
 	while(1) {
 		if(skip) {
@@ -55,7 +55,7 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 		} else {
 			bak = b = *addr++;
 
-			if(i2 == 2) {
+			if(bank == 16) {
 				bak >>= 4;
 				b &= 0x0F;
 			} else {
@@ -64,7 +64,7 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 			
 			for(uint8_t j = 0; j < 8; j++) {
 				if(b & 1) {
-					for(uint8_t o = 0; o < 3; o++) set(o + x + i, y + j + (i2 << 3));
+					for(uint8_t o = 0; o < 3; o++) set(o + x, y + j + bank);
 				}
 				
 				b >>= 1;
@@ -78,9 +78,11 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 			}
 		}
 
-		if(++i2 >= 3) {
-			i2 = 0;
-			i++;
+		bank += 8;
+
+		if(bank >= 24) {
+			bank = 0;
+			x++;
 		}
 	}
 }

@@ -1,4 +1,6 @@
-uint8_t pressed[6] = { 0 };
+uint8_t pressed[6] __attribute__((section (".buttonbuffer"))) = { 0 };
+
+// TODO: make a macro in inline assembly for accessing pressed[]
 
 void update_buttons() {
 	for(uint8_t b = 0; b < 3; b++) {
@@ -20,20 +22,22 @@ void update_buttons() {
 
 typedef struct {
 	volatile uint8_t *val;
-	uint8_t min, max, special;
+	uint8_t min, max;
 } setupdata_t;
 
 const setupdata_t setupdata[] = {
-	{ &hour, 0, 23, 0 },
-	{ &minute, 0, 59, 0 },
-	{ &second, 0, 59, 0 },
-	{ &weekday, 0, 6, 1 },
-	{ &day, 1, 31, 0 },
-	{ &month, 0, 11, 2 },
-	{ &year, 0, 99, 0 }
+	{ &hour, 0, 23 },
+	{ &minute, 0, 59 },
+	{ &second, 0, 59 },
+	{ &weekday, 0, 6 },
+	{ &day, 1, 31 },
+	{ &month, 0, 11 },
+	{ &year, 0, 99 }
 };
 
 static inline void setup_menu() {
+	asm volatile ("inline_setup_menu:\n");
+
 	RTC.CTRLA &= ~RTC_RTCEN_bm;
 
 	int8_t needsrefresh, done, currentval;
@@ -54,13 +58,13 @@ static inline void setup_menu() {
 					buffer[p + 128] = 0x02;
 				}
 
-				switch(setupdata[i].special) {
-					case 1:
+				switch(i) {
+					case 3: // Weekday selection
 						eeprom_read_table_string(EE_daylist + currentval, buf);
 						drawstr(buf, STR_CENTER, 33);
 						break;
 
-					case 2:
+					case 5: // Month selection
 						eeprom_read_table_string(EE_monthlist + currentval, buf);
 						drawstr(buf, STR_CENTER, 33);
 						break;
@@ -103,9 +107,12 @@ static inline void setup_menu() {
 
 	RTC.CTRLA |= RTC_RTCEN_bm;
 	wakeuptimeout = WUT_MAXTIMEOUT;
+
+	asm volatile ("inline_setup_menu_end:\n");
 }
 
 static inline void calibration_menu() {
+	asm volatile ("inline_calibration_menu:\n");
 	uint16_t val = RTC.PER;
 
 	int8_t needsrefresh = 1, done = 0, cursor = 0, selected = 0;
@@ -202,6 +209,8 @@ static inline void calibration_menu() {
 	RTC.PER = val;
 	wakeuptimeout = WUT_MAXTIMEOUT;
 	eeprom_write_word((uint16_t *)(&USERROW.USERROW0 - 0x1400), val);
+
+	asm volatile ("inline_calibration_menu_end:\n");
 }
 
 void waitforrelease(uint8_t mask) {

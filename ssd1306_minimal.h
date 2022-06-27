@@ -66,34 +66,48 @@ const unsigned char initialization[] = {
 };
 
 static inline void oled_init() {
+	asm volatile ("inline_oled_init:\n");
+
 	I2C_WRAPPER_init();
 
-	for (uint8_t i = 0; i < sizeof(initialization) - 6; i++) {
+	for(uint8_t i = 0; i < sizeof(initialization); i++) {
 		I2C_WRAPPER_beginTransmission();
 		I2C_WRAPPER_write(0x80);
 		I2C_WRAPPER_write(initialization[i]);
 		I2C_WRAPPER_endTransmission();
 	}
+
+	asm volatile ("inline_oled_init_end:\n");
 }
 
 void refresh() {
-	for (uint8_t i = sizeof(initialization) - 6; i < sizeof(initialization); i++) {
-		I2C_WRAPPER_beginTransmission();
-		I2C_WRAPPER_write(0x80);
-		I2C_WRAPPER_write(initialization[i]);
-		I2C_WRAPPER_endTransmission();
-	}
+	asm volatile(
+		"refresh_outer_loop:\n"
+			"rcall I2C_WRAPPER_beginTransmission\n"
 
-	unsigned char *p = buffer;
-	for (int i = 0; i < 64; i++) {
-		I2C_WRAPPER_beginTransmission();
-		I2C_WRAPPER_write(0x40);
-		for(int i = 0; i < 16; i++) {
-			I2C_WRAPPER_write(*p);
-			p++;
-		}
-		I2C_WRAPPER_endTransmission();
-	}  
+			"ldi r24, 0x40\n" // OLED data write command
+			"rcall I2C_WRAPPER_write\n"
+
+			"ldi r25, 16\n" // Counter
+
+		"refresh_inner_loop:\n"
+			"ld r24, Y+\n"
+			"rcall I2C_WRAPPER_write\n"
+
+			"dec r25\n"
+			"brne refresh_inner_loop\n"
+
+		"refresh_end:\n" // End transmission
+			"ldi r24, %[I2C_END_VAL]\n"
+			"sts %[I2C_END_REG], r24\n"
+
+			"cpi YH, 0x3C\n" // Frame buffer end, only need to check the high byte
+			"brne refresh_outer_loop\n"
+		::
+		"y" (buffer),
+		[I2C_END_REG] "i" (&TWI0.MCTRLB),
+		[I2C_END_VAL] "M" (TWI_ACKACT_NACK_gc | TWI_MCMD_STOP_gc)
+	);
 }
 
 void write(uint8_t x, uint8_t y, uint8_t c) {
@@ -115,9 +129,14 @@ void clr(uint8_t x, uint8_t y) {
 }
 
 void cls() {
-	for(int i = 0; i < 1024; i++) {
-		buffer[i] = 0;
-	}
+	asm volatile(
+		"cls_clear_loop:\n"
+			"st X+, r1\n"
+			"cpi XH, 0x3C\n"
+			"brne cls_clear_loop\n"
+		::
+		"x" (buffer)
+	);
 }
 
 #endif

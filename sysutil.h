@@ -4,14 +4,14 @@
 
 #define PROTECTED_WRITE(reg, value) \
 	__asm__ __volatile__( \
+		"ldi r24, %[val]\n" \
 		"out %[ccp], r2\n" \
-    	"sts %[ioreg], %[val]" \
+    	"sts %[ioreg], r24" \
 		:: \
 		[ccp] "I" (_SFR_IO_ADDR(CCP)), \
         [ioreg] "n" (_SFR_MEM_ADDR(reg)), \
-        [val] "r" ((uint8_t)value) \
+        [val] "M" ((uint8_t)value) \
 	)
-
 
 void delay_ms(uint8_t ms) {
 	while(ms--) {

@@ -59,6 +59,7 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 				if(b & 1) {
 					for(uint8_t o = 0; o < 3; o++) set(o + x + i, y + j + (i2 << 3));
 				}
+				
 				b >>= 1;
 			}
 		}
@@ -66,6 +67,8 @@ void drawbigchar(char c, uint8_t x, uint8_t y) {
 }
 
 static inline void drawclock(uint8_t h, uint8_t m, uint8_t s, uint8_t y) {
+	asm volatile("inline_draw_clock:\n");
+
 	drawbigchar(h / 10, CLOCK_X + 0, y);
 	drawbigchar(h % 10, CLOCK_X + 16, y);
 	if(!(s & 1)) drawbigchar(10, CLOCK_X + 32, y);
@@ -74,4 +77,6 @@ static inline void drawclock(uint8_t h, uint8_t m, uint8_t s, uint8_t y) {
 	if(!(s & 1)) drawbigchar(10, CLOCK_X + 72, y);
 	drawbigchar(s / 10, CLOCK_X + 80, y);
 	drawbigchar(s % 10, CLOCK_X + 96, y);
+
+	asm volatile("inline_draw_clock_end:\n");
 }

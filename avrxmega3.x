@@ -186,15 +186,22 @@ SECTIONS
      _edata = . ;
      PROVIDE (__data_end = .) ;
   }  > data AT> text
+
+  /* tinyWatch MODIFICATIONS START HERE */
+
   .bss  ADDR(.data) + SIZEOF (.data)  (NOLOAD)  : AT (ADDR (.bss))
   {
      PROVIDE (__bss_start = .) ;
      *(.framebuffer)
-    *(.bss)
+     *(.buttonbuffer)
+     *(.bss)
      *(.bss*)
      *(COMMON)
      PROVIDE (__bss_end = .) ;
   }  > data
+
+  /* tinyWatch MODIFICATIONS END HERE */
+
    __data_load_start = LOADADDR(.data);
    __data_load_end = __data_load_start + SIZEOF(.data);
   /* Global data not cleared after reset.  */

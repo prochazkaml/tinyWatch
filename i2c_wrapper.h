@@ -33,7 +33,7 @@ void I2C_WRAPPER_write(unsigned char data) {
 	while(!(TWI0.MSTATUS & (TWI_WIF_bm | TWI_RXACK_bm)));
 }
 
-void I2C_WRAPPER_endTransmission() {
+static inline void I2C_WRAPPER_endTransmission() {
 	TWI0.MCTRLB = TWI_ACKACT_NACK_gc | TWI_MCMD_STOP_gc;
 }
 

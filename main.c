@@ -102,9 +102,13 @@ int main() {
 	clockupdated |= 1;
 
 	while(1) {
+		asm volatile("main_loop:\n");
+
 		slowsysclk();
 
 		if(wakeuptimeout == WUT_JUSTWOKEUP) {
+			asm volatile("recover_from_sleep:\n");
+
 			// Turn on the display
 
 			PORTB.DIRCLR = 0x03;
@@ -126,6 +130,8 @@ int main() {
 		}
 		
 		if(!wakeuptimeout) {
+			asm volatile("enter_sleep_mode:\n");
+
 			// After a certain cutoff period, turn off the display
 
 			VPORTA_OUT &= ~0x02;
@@ -141,6 +147,8 @@ int main() {
 			SLPCTRL.CTRLA = SLPCTRL_SEN_bm | SLPCTRL_SMODE_STDBY_gc;
 			sleep_cpu();
 		} else {
+			asm volatile("process_events:\n");
+
 			if(!(VPORTA_IN & (_BV(5) | _BV(7)))) {
 				waitforrelease(_BV(5) | _BV(7));
 

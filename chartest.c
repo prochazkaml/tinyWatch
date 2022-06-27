@@ -2,7 +2,7 @@
 #include "thiccfont.h"
 
 int main() {
-	int ch, c, i, x, y;
+	int ch, c, i, i2, x, y;
 
 	char buffer[48 * 24];
 
@@ -11,15 +11,24 @@ int main() {
 
 		for(i = 0; i < 24 * 48; i++) buffer[i] = '.';
 
-		const uint8_t *addr = bigfont + 11;
+		const uint8_t *addr = bigfont + 11 + bigfont[ch];
 
-		uint8_t w = bigfont[c];
+		i = 0, i2 = 0;
 
-		while(c--) addr += bigfont[c] * 3;
+		uint8_t b, bak, skip = 0;
 
-		for(uint8_t i = 0; i < w; i++) {
-			for(uint8_t i2 = 0; i2 < 3; i2++) {
-				uint8_t b = *addr++;
+		while(1) {
+			if(skip) {
+				skip--;
+			} else {
+				bak = b = *addr++;
+
+				if(i2 == 2) {
+					bak >>= 4;
+					b &= 0x0F;
+				} else {
+					bak = 0;
+				}
 
 				for(uint8_t j = 0; j < 8; j++) {
 					if(b & 1) {
@@ -32,6 +41,19 @@ int main() {
 
 					b >>= 1;
 				}
+
+				if(bak) {
+					if(bak == 0xF) { // Character delimeter
+						break;
+					} else {
+						skip = bak;
+					}
+				}
+			}
+
+			if(++i2 >= 3) {
+				i2 = 0;
+				i++;
 			}
 		}
 

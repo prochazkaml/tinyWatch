@@ -17,12 +17,12 @@ const uint8_t bigfont[] = {
 	 * Example:
 	 * 
 	 * // 0             *   1             *   2             *
-	 *    0xFF, 0x81, 0x16,                   0x69, 0x42, 0xF0
+	 *    0xFF, 0x81, 0x36,                   0x69, 0x42, 0xF0
 	 * 
 	 * Will get decompressed as:
 	 * 
 	 * // 0             *   1             *   2             *
-	 *    0xFF, 0x81, 0x16, 0x00, 0x00, 0x00, 0x69, 0x42, 0xF0
+	 *    0xFF, 0x81, 0x06, 0x00, 0x00, 0x00, 0x69, 0x42, 0xF0
 	 */
 
 //  0             *   1             *   2             *   3             *   4             *   5             *   6             *   7             *   8             *   9             *   10            *   11            *   12            *

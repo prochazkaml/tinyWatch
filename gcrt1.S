@@ -1,3 +1,10 @@
+// Modified gcrt1.S from avr-libc to better suit the tinyWatch project.
+// YOU DO NOT NEED TO COMPILE THIS FILE. A pre-compiled copy of crtattiny1614.o is present in the repository.
+
+// To compile, copy this file into the avr-libc/crt1/ directory.
+// Then configure the avr-libc directory (possibly by running `./bootstrap` and then `./configure`),
+// go to the avr/devices/attiny1614 directory and run `make` therer.
+
 /* Copyright (c) 2002, Marek Michalkiewicz <marekm@amelek.gda.pl>
    Copyright (c) 2007, 2008 Eric B. Weddington
    All rights reserved.

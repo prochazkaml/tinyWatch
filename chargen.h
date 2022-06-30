@@ -27,13 +27,13 @@ uint8_t drawchar(char c, uint8_t x, uint8_t y) {
 }
 
 uint8_t strdrawlen(const char *c) {
-	uint8_t x = 0;
+	uint8_t x = -1;
 
 	while(*c != 0) {
 		x += charlen(*c++) + 1;
 	}
 
-	return x - 1;
+	return x;
 }
 
 void drawstr(const char *c, uint8_t x, uint8_t y) {
@@ -47,34 +47,25 @@ void drawstr(const char *c, uint8_t x, uint8_t y) {
 void drawbigchar(char c, uint8_t x, uint8_t y) {
 	const uint8_t *addr = bigfont + 11 + bigfont[c];
 	
-	uint8_t bank = 0, b, bak, skip = 0;
+	uint8_t bank = 0, b, skip = 0;
 
-	while(1) {
+	while(skip != 0xF) {
 		if(skip) {
 			skip--;
 		} else {
-			bak = b = *addr++;
+			b = *addr++;
 
 			if(bank == 16) {
-				bak >>= 4;
+				skip = b >> 4;
 				b &= 0x0F;
-			} else {
-				bak = 0;
 			}
-			
+
 			for(uint8_t j = 0; j < 8; j++) {
 				if(b & 1) {
 					for(uint8_t o = 0; o < 3; o++) set(o + x, y + j + bank);
 				}
 				
 				b >>= 1;
-			}
-
-			if(bak) {
-				if(bak == 0xF)
-					break;
-				else
-					skip = bak;
 			}
 		}
 

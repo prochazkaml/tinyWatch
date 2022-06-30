@@ -26,9 +26,10 @@
 
 #define second VPORTC_DIR
 #define minute VPORTC_OUT
-
 #define hour GPIO_GPIOR2
-#define weekday GPIO_GPIOR3
+
+#define pressed_matrix GPIO_GPIOR3
+#define ispressed(bit) (pressed_matrix & _BV(bit + 5))
 
 #define EE_hexlist 0x00
 #define EE_monthlengths 0x10
@@ -38,7 +39,7 @@
 
 char buf[64];
 
-volatile uint8_t year, month, day;
+volatile uint8_t year, month, day, weekday;
 
 #define STR_CENTER 255
 

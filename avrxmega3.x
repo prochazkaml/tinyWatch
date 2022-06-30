@@ -193,7 +193,6 @@ SECTIONS
   {
      PROVIDE (__bss_start = .) ;
      *(.framebuffer)
-     *(.buttonbuffer)
      *(.bss)
      *(.bss*)
      *(COMMON)

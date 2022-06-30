@@ -1,26 +1,32 @@
+#define update_val(varname) { val = varname; val++; varname = val; }
+
 ISR(RTC_CNT_vect) {
-	second++;
+	uint8_t val;
 
-	if(second >= 60) {
+	update_val(second);
+
+	if(val >= 60) {
 		second = 0;
-		minute++;
+		update_val(minute);
 
-		if(minute >= 60) {
+		if(val >= 60) {
 			minute = 0;
-			hour++;
+			update_val(hour);
 
-			if(hour >= 24) {
+			if(val >= 24) {
 				hour = 0;
-				day++;
-				weekday++;
 
-				if(weekday >= 7) weekday = 0;
+				update_val(weekday);
+				
+				if(val >= 7) weekday = 0;
 
-				if(day > EEBYTE(EE_monthlengths + month)) {
+				update_val(day);
+
+				if(val > EEBYTE(EE_monthlengths + month)) {
 					day = 1;
-					month++;
+					update_val(month);
 
-					if(month >= 12) {
+					if(val >= 12) {
 						month = 0;
 						year++;
 					}
@@ -29,14 +35,18 @@ ISR(RTC_CNT_vect) {
 		}
 	}
 
-	if(wakeuptimeout <= WUT_MAXTIMEOUT && wakeuptimeout) wakeuptimeout--;
+	val = wakeuptimeout;
+
+	if(val <= WUT_MAXTIMEOUT && val) val--;
 
 	if((VPORTA_IN & (_BV(5) | _BV(6) | _BV(7))) != (_BV(5) | _BV(6) | _BV(7))) {
-		if(wakeuptimeout)
-			wakeuptimeout = WUT_MAXTIMEOUT;
+		if(val)
+			val = WUT_MAXTIMEOUT;
 		else
-			wakeuptimeout = WUT_JUSTWOKEUP;
+			val = WUT_JUSTWOKEUP;
 	}
+
+	wakeuptimeout = val;
 
 	RTC.INTFLAGS |= RTC_OVF_bm;
 	clockupdated |= 1;

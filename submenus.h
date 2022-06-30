@@ -1,21 +1,48 @@
-uint8_t pressed[6] __attribute__((section (".buttonbuffer"))) = { 0 };
-
-// TODO: make a macro in inline assembly for accessing pressed[]
+uint8_t pressed[3] = { 0 };
 
 void update_buttons() {
-	for(uint8_t b = 0; b < 3; b++) {
-		if(!(VPORTA_IN & _BV(b + 5))) {
-			if(!pressed[b + 3])
-				pressed[b] = 1;
-			else
-				pressed[b] = 0;
+	asm volatile (
+		"ldi r18, (1 << 5)\n" // Bit mask
 
-			pressed[b + 3] = 30;
-		} else {
-			if(pressed[b + 3]) pressed[b + 3]--;
-			pressed[b] = 0;
-		}
-	}
+		"update_buttons_loop:\n"
+			"in r19, %[REG_PRESSEDMATRIX]\n" // Read the button status
+			"com r18\n" // Automatically assume this button is not freshly pressed
+			"and r19, r18\n"
+			"com r18\n"
+
+			// Read from the I/O port & mask our requested bit off
+			"in r24, %[REG_INPUT]\n"
+			"and r24, r18\n"
+
+			"ld r24, Z\n" // Pre-load the current debounce counter value, it is going to be useful later
+
+			"brne update_buttons_depressed\n"
+
+			"tst r24\n" // Is the button freshly pressed (i.e. has the debounce counter timed out)?
+			"brne update_buttons_no_set_bit\n"
+
+			"or r19, r18\n" // It is freshly pressed!
+
+		"update_buttons_no_set_bit:\n"
+			"ldi r24, 30\n" // Reset the button debounce counter
+
+		"update_buttons_depressed:\n"
+			"dec r24\n" // Pre-decrement the value
+
+			"sbrc r24, 7\n" // If the number has gone negative, reset it to 0
+			"clr r24\n"
+
+			"st Z+, r24\n" // Write the updated debounce counter
+
+			"out %[REG_PRESSEDMATRIX], r19\n" // Store the new button status
+
+			"lsl r18\n" // Shift to the next bit, run again if necessary
+			"brne update_buttons_loop\n"
+		::
+		"z" (pressed),
+		[REG_PRESSEDMATRIX] "i" (&pressed_matrix),
+		[REG_INPUT] "i" (&VPORTA_IN)
+	);
 
 	delay_ms(1);
 }
@@ -40,14 +67,15 @@ static inline void setup_menu() {
 
 	RTC.CTRLA &= ~RTC_RTCEN_bm;
 
-	int8_t needsrefresh, done, currentval;
+	int8_t needsrefresh, currentval, min, max;
 
 	for(uint8_t i = 0; i < 7; i++) {
 		needsrefresh = 1;
-		done = 0;
 		currentval = *setupdata[i].val;
+		min = setupdata[i].min;
+		max = setupdata[i].max;
 
-		while(!done) {
+		while(1) {
 			if(needsrefresh) {
 				cls();
 
@@ -81,21 +109,21 @@ static inline void setup_menu() {
 
 			update_buttons();
 
-			if(pressed[0]) {
+			if(ispressed(0)) {
 				currentval--;
 				needsrefresh = 1;
 
-				if(currentval < setupdata[i].min) currentval = setupdata[i].max;
+				if(currentval < min) currentval = max;
 			}
 
-			if(pressed[2]) {
+			if(ispressed(2)) {
 				currentval++;
 				needsrefresh = 1;
 
-				if(currentval > setupdata[i].max) currentval = setupdata[i].min;
+				if(currentval > max) currentval = min;
 			}
 
-			if(pressed[1]) {
+			if(ispressed(1)) {
 				*setupdata[i].val = currentval;
 				break;
 			}
@@ -115,7 +143,7 @@ static inline void calibration_menu() {
 	asm volatile ("inline_calibration_menu:\n");
 	uint16_t val = RTC.PER;
 
-	int8_t needsrefresh = 1, done = 0, cursor = 0, selected = 0;
+	int8_t needsrefresh = 1, cursor = 0, selected = 0;
 
 	for(uint8_t i = 0; i < 4; i++) {
 		buf[3 - i] = val & 0xF;
@@ -123,7 +151,7 @@ static inline void calibration_menu() {
 		val >>= 4;
 	}
 
-	while(!done) {
+	while(1) {
 		if(needsrefresh) {
 			cls();
 
@@ -160,36 +188,36 @@ static inline void calibration_menu() {
 		update_buttons();
 
 		if(selected) {
-			if(pressed[0]) {
+			if(ispressed(0)) {
 				buf[cursor]--;
 				if(buf[cursor] < 0) buf[cursor] = 0xF;
 				needsrefresh = 1;
 			}
 
-			if(pressed[2]) {
+			if(ispressed(2)) {
 				buf[cursor]++;
 				if(buf[cursor] > 0xF) buf[cursor] = 0;
 				needsrefresh = 1;
 			}
 
-			if(pressed[1]) {
+			if(ispressed(1)) {
 				selected = 0;
 				needsrefresh = 1;
 			}
 		} else {
-			if(pressed[0]) {
+			if(ispressed(0)) {
 				cursor--;
 				if(cursor < 0) cursor = 4;
 				needsrefresh = 1;
 			}
 
-			if(pressed[2]) {
+			if(ispressed(2)) {
 				cursor++;
 				if(cursor > 4) cursor = 0;
 				needsrefresh = 1;
 			}
 
-			if(pressed[1]) {
+			if(ispressed(1)) {
 				if(cursor == 4) break;
 
 				selected = 1;				

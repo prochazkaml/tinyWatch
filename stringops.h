@@ -33,7 +33,7 @@ void min_sprintf(char *fmt, ...) {
 				break;
 
 			case '\x02': // %d
-				int d = va_arg(ap, int);
+				int8_t d = va_arg(ap, int);
 
 				if(d < 0) {
 					*dest++ = '-';

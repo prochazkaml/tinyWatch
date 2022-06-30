@@ -12,4 +12,5 @@ fi
 
 # Dump .data: avr-objdump -s -j .data main.elf
 # Dump .rodata: avr-objdump -s -j .rodata main.elf
+# List symbols: avr-objdump -t main.elf
 # Disassemble: avr-objdump -S main.elf

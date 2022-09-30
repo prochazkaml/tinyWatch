@@ -3,7 +3,7 @@
 
 // Disassemble with: avr-objdump -m avr -D main.hex
 
-#include "tn1614def.inc"
+#include "tn1614def.asm"
 #include "defines.asm"
 
 .org 0

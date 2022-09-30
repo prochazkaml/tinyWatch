@@ -1,0 +1,12 @@
+"Id";"Designator";"Package";"Quantity";"Designation";"Supplier and ref";
+1;"SW1,SW3,SW2";"SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin";3;"SW_Push";;;
+2;"J1";"PinSocket_1x04_P2.54mm_Horizontal";1;"Conn_01x04";;;
+3;"U1";"SOIC-14_3.9x8.7mm_P1.27mm";1;"ATtiny1614-SS";;;
+4;"R1,R5";"R_0603_1608Metric_Pad0.98x0.95mm_HandSolder";2;"4k7";;;
+5;"C5,C8,C4,C3,C2";"C_0603_1608Metric_Pad1.08x0.95mm_HandSolder";5;"1u";;;
+6;"C6";"C_0603_1608Metric_Pad1.08x0.95mm_HandSolder";1;"2u2";;;
+7;"R4";"R_0603_1608Metric_Pad0.98x0.95mm_HandSolder";1;"910k";;;
+8;"D1";"D_SOD-110";1;"1N4148W";;;
+9;"C1";"C_0603_1608Metric_Pad1.08x0.95mm_HandSolder";1;"4u7";;;
+10;"J2";"OLED-128O064D";1;"Conn_01x30";;;
+11;"C7";"C_0603_1608Metric_Pad1.08x0.95mm_HandSolder";1;"10u";;;

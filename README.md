@@ -2,13 +2,13 @@
 
 A simple ATtiny1614-based wristwatch with an OLED display, a couple of buttons and a CR2032 battery.
 
-*TODO: put an image of the thing here*
+![tinywatch](https://user-images.githubusercontent.com/41787099/195558866-5d9a7961-0574-4461-b3f9-89c7d53c51ee.jpg)
 
 To build your very own tinyWatch, you'll need to source the components, get a PCB made (or make it yourself, if you're brave enough), get the plastic parts 3D printed (or, again, print it yourself if you've already got a printer) and find a compatible 18 mm wrist strap + push pin (or edit the .scad files if you've got some other one).
 
 ## Plastic parts
 
-The plastic parts of the tinyWatch are expected to be 3D printed. They consist of:
+The plastic parts of the tinyWatch are expected to be 3D printed (tested FDM, but SLA should work as well). They consist of:
 
 - the back piece where the battery and PCB will be fit
 - the front piece which will hold the OLED panel as well as the buttons in place, it also contains a pair of holes at each end for fitting a wrist strap push pin

@@ -35,7 +35,7 @@ Of course, you will then need to populate the manufactured PCB with components. 
 - 1x **10 uF capacitor** (0603 package)
 - 1x **1N4148W diode** (SOD-110 package, but SOD-123 *could* work)
 
-What is not included in the BOM is a **CR2032** battery, which you will need to solder short wires to (I recommend getting one of those which have pre-welded contacts on the terminals, to which you will then solder to).
+What is not included in the BOM is a **CR2032** battery, which you will need to solder short wires to (I recommend getting one of those which have pre-welded contacts on the terminals, to which you will then solder to – if you cannot find any of these easily, I have had good experience with Varta CR2032s having a solder-friendly surface, just don't heat them up for [too long](https://www.youtube.com/watch?v=wmnAx6pzDoQ)).
 
 The positive wire of the battery should be soldered to the "squiggly" line on the bottom side of the PCB, and the negative wire should be soldered anywhere to the ground plane of the PCB.
 

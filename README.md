@@ -17,6 +17,8 @@ The plastic parts of the tinyWatch are expected to be 3D printed (tested FDM, bu
 
 You can find these in the [hw/3D](https://github.com/prochazkaml/tinyWatch/tree/master/hw/3D) directory in .stl format with the .scad source files are available as well.
 
+These parts are held together with an **M3 nut and M3x6 screw**.
+
 ## PCB & Hardware
 
 The circuit diagram as well as the PCB were designed in KiCad (with [mitxela's rounded tracks plugin](https://github.com/mitxela/kicad-round-tracks)), the project files are available in the [hw/kicad](https://github.com/prochazkaml/tinyWatch/tree/master/hw/kicad) directory. Many prototype PCB manufacturers support uploading raw KiCad files directly without the need to generate Gerber files. Recommended PCB thickness is ~1.5 mm.

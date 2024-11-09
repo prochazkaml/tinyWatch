@@ -7,6 +7,7 @@
 
 #define wakeuptimeout GPIO_GPIOR0
 #define clockupdated GPIO_GPIOR1
+#define lastbuttonstate GPIO_GPIOR2
 
 #define WUT_MAXTIMEOUT 8
 #define WUT_JUSTWOKEUP 0xFF
@@ -57,10 +58,16 @@ ISR(RTC_CNT_vect) {
 	if(val <= WUT_MAXTIMEOUT && val) val--;
 
 	if((VPORTA_IN & (_BV(5) | _BV(6) | _BV(7))) != (_BV(5) | _BV(6) | _BV(7))) {
-		if(val)
-			val = WUT_MAXTIMEOUT;
-		else
-			val = WUT_JUSTWOKEUP;
+		if(!lastbuttonstate) {
+			if(val)
+				val = WUT_MAXTIMEOUT;
+			else
+				val = WUT_JUSTWOKEUP;
+
+			lastbuttonstate = 1;
+		}
+	} else {
+		lastbuttonstate = 0;
 	}
 
 	wakeuptimeout = val;

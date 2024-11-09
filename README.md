@@ -52,13 +52,15 @@ The tinyWatch's firmware is written in C, so you'll need the AVR port of GCC (on
 Bulding the firmware is as easy as running the following command:
 
 ```bash
-make
+make all REVISION=2
 ```
+
+**NOTE**: The current hardware in this repository is revision 2. The old hardware (without the external crystal) is revision 1.
 
 If you have a [serialupdi](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) programmer attached to the PC as well as the watch and want to upload the firmware to the watch, run the following:
 
 ```bash
-make run
+make run REVISION=2
 ```
 
 ## Setup
@@ -68,8 +70,6 @@ After flashing the firmware, you will want to set up the clock. To do that, pres
 After a few hours/days of usage, you might notice that the clock drifts. To remedy this issue, press the **left and middle button** together to enter the clock calibration menu. There, you will be presented by a 16-bit hex value (default is 8163). With the **left** and **right** button, you may move the cursor. To edit a value of a digit, press the **middle** button (the cursor will appear above the digit so that it is apparent what the buttons currently do) and adjust the value using the **left** and **right** button. To confirm your choice, press the **middle** button again to go back to cursor mode. Choose `Done` and press the **middle** button to exit.
 
 The calibration value is stored in EEPROM, so it should remain even after a battery replacement.
-
-TODO: Temperature & voltage sensing for better accuracy OR use an external 32768 Hz watch crystal so that this calibration is unnecessary.
 
 That's it! Enjoy your watch. More features (including a serial monitor with text input) coming soon ;)
 

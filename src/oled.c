@@ -71,8 +71,8 @@ const uint8_t oled_init_bytes[] = {
 void oled_init() {
 	// Turn on the display
 
-	VPORTA_DIR |= 0x02;
-	VPORTA_OUT |= 0x02;
+	OLED_POWER_PORT_DIR |= OLED_POWER_PORT_MASK;
+	OLED_POWER_PORT_OUT |= OLED_POWER_PORT_MASK;
 
 	sys_delay(150);
 
@@ -89,7 +89,7 @@ void oled_init() {
 void oled_deinit() {
 	// Turn off the display
 
-	VPORTA_OUT &= ~0x02;
+	OLED_POWER_PORT_OUT &= ~OLED_POWER_PORT_MASK;
 }
 
 void oled_refresh() {

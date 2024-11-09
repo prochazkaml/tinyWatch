@@ -4,6 +4,10 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 
+#if REVISION == 1001
+	#warning You probably do not have revision 1001. It was only used during the development of revision 2.
+#endif
+
 void sys_delay(uint8_t ms) {
 	while(ms--) {
 		_delay_us(997); // 2 bytes smaller than _delay_ms(1) :)

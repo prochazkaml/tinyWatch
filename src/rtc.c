@@ -16,8 +16,6 @@ volatile uint8_t year, month, day, weekday, hour, minute, second;
 
 #define update_val(varname) { val = varname; val++; varname = val; }
 
-#define EXT_CRYSTAL
-
 ISR(RTC_CNT_vect) {
 	uint8_t val;
 
@@ -81,8 +79,10 @@ void rtc_init() {
 
 #ifdef EXT_CRYSTAL
 	PROTECTED_WRITE(CLKCTRL_XOSC32KCTRLA, CLKCTRL_ENABLE_bm);
-#else
+#elifdef INT_CRYSTAL
 	PROTECTED_WRITE(CLKCTRL_OSC32KCTRLA, CLKCTRL_RUNSTDBY_bm);
+#else
+	#error
 #endif
 
 	// Set up RTC
@@ -94,8 +94,10 @@ void rtc_init() {
 	
 #ifdef EXT_CRYSTAL
 	RTC.CLKSEL = RTC_CLKSEL_TOSC32K_gc;
-#else
+#elifdef INT_CRYSTAL
 	RTC.CLKSEL = RTC_CLKSEL_INT32K_gc;
+#else
+	#error
 #endif
 
 	rtc_reload_config();

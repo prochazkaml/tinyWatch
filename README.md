@@ -43,7 +43,7 @@ Of course, you will then need to populate the manufactured PCB with components. 
 
 What is not included in the BOM is a **CR2032** battery, which you will need to solder short wires to (I recommend getting one of those which have pre-welded contacts on the terminals, to which you will then solder to – if you cannot find any of these easily, I have had good experience with Varta CR2032s having a solder-friendly surface, just don't heat them up for [too long](https://www.youtube.com/watch?v=wmnAx6pzDoQ)).
 
-The positive wire of the battery should be soldered to the "squiggly" line on the bottom side of the PCB, and the negative wire should be soldered anywhere to the ground plane of the PCB.
+The positive and negative wires of the battery should be soldered to the bottom two pads.
 
 ## Firmware building instructions
 

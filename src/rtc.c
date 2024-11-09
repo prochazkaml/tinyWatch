@@ -40,7 +40,7 @@ ISR(RTC_CNT_vect) {
 
 				update_val(day);
 
-				if(val > EEBYTE(EE_monthlengths + month)) {
+				if(val > get_month_length(month, year)) {
 					day = 1;
 					update_val(month);
 

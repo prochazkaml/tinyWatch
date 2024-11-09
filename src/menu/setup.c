@@ -5,22 +5,30 @@
 #include "../buttons.h"
 #include "../string.h"
 #include "../clock.h"
-#include "../sysutil.h"
 #include <stdint.h>
 
 typedef struct {
+	const char *title;
 	volatile uint8_t *val;
 	uint8_t min, max;
 } setupdata_t;
 
+const char string_setup_hour[] = "Hours";
+const char string_setup_minutes[] = "Minutes";
+const char string_setup_seconds[] = "Seconds";
+const char string_setup_weekday[] = "Weekday";
+const char string_setup_day[] = "Day";
+const char string_setup_month[] = "Month";
+const char string_setup_year[] = "Year";
+
 const setupdata_t setupdata[] = {
-	{ &hour, 0, 23 },
-	{ &minute, 0, 59 },
-	{ &second, 0, 59 },
-	{ &weekday, 0, 6 },
-	{ &day, 1, 31 },
-	{ &month, 0, 11 },
-	{ &year, 0, 99 }
+	{ string_setup_hour, &hour, 0, 23 },
+	{ string_setup_minutes, &minute, 0, 59 },
+	{ string_setup_seconds, &second, 0, 59 },
+	{ string_setup_weekday, &weekday, 0, 6 },
+	{ string_setup_day, &day, 1, 31 },
+	{ string_setup_month, &month, 0, 11 },
+	{ string_setup_year, &year, 0, 99 }
 };
 
 void menu_setup() {
@@ -38,7 +46,7 @@ void menu_setup() {
 			if(needsrefresh) {
 				oled_clear_framebuffer();
 
-				char_string_draw(string_read_from_eeprom(EE_setuplist + i), STR_CENTER, 0);
+				char_string_draw(setupdata[i].title, STR_CENTER, 0);
 
 				for(uint8_t p = 0; p < 128; p++) {
 					oled_set_pixel(p, 9);
@@ -46,11 +54,11 @@ void menu_setup() {
 
 				switch(i) {
 					case 3: // Weekday selection
-						char_string_draw(string_read_from_eeprom(EE_daylist + currentval), STR_CENTER, 33);
+						char_string_draw(string_get_day_of_week(currentval), STR_CENTER, 33);
 						break;
 
 					case 5: // Month selection
-						char_string_draw(string_read_from_eeprom(EE_monthlist + currentval), STR_CENTER, 33);
+						char_string_draw(string_get_month(currentval), STR_CENTER, 33);
 						break;
 
 					default:

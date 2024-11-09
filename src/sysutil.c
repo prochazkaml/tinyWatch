@@ -41,3 +41,23 @@ void sys_sleep() {
 	sleep_cpu();
 }
 
+char nibble_to_hex(uint8_t nibble) {
+	if(nibble < 10) return nibble + '0';
+
+	return nibble + 'A' - 10;
+}
+
+const uint8_t month_lengths[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+uint8_t get_month_length(uint8_t month, uint8_t year) {
+	if(month < 0 || month > 11) return 0;
+
+	uint8_t retval = month_lengths[month];
+
+	if(month != 1) return retval;
+
+	if(!(year & 3)) retval++;
+
+	return retval;
+}
+

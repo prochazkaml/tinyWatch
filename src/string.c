@@ -1,25 +1,65 @@
 #include "string.h"
-#include "sysutil.h"
 #include <stdint.h>
 #include <stdarg.h>
 
-char eepbuf[64];
+const char string_err[] = "[ERROR]";
 
-char *string_read_from_eeprom(uint8_t key) {
-	char *dest = eepbuf;
+const char string_mon[] = "Monday";
+const char string_tue[] = "Tuesday";
+const char string_wed[] = "Wednesday";
+const char string_thu[] = "Thursday";
+const char string_fri[] = "Friday";
+const char string_sat[] = "Saturday";
+const char string_sun[] = "Sunday";
 
-	uint8_t start = EEBYTE(key), len = 0;
+const char *string_days[] = {
+	string_mon,
+	string_tue,
+	string_wed,
+	string_thu,
+	string_fri,
+	string_sat,
+	string_sun,
+};
 
-	char c;
+const char string_jan[] = "January";
+const char string_feb[] = "February";
+const char string_mar[] = "March";
+const char string_apr[] = "April";
+const char string_may[] = "May";
+const char string_jun[] = "June";
+const char string_jul[] = "July";
+const char string_aug[] = "August";
+const char string_sep[] = "September";
+const char string_oct[] = "October";
+const char string_nov[] = "November";
+const char string_dec[] = "December";
 
-	while((c = EEBYTE(start++))) {
-		*dest++ = c;
-		len++;
-	}
+const char *string_months[] = {
+	string_jan,
+	string_feb,
+	string_mar,
+	string_apr,
+	string_may,
+	string_jun,
+	string_jul,
+	string_aug,
+	string_sep,
+	string_oct,
+	string_nov,
+	string_dec,
+};
 
-	*dest = 0;
+const char *string_get_day_of_week(int day) {
+	if(day < 0 || day > 6) return string_err;
 
-	return eepbuf;
+	return string_days[day];
+}
+
+const char *string_get_month(int month) {
+	if(month < 0 || month > 11) return string_err;
+
+	return string_months[month];
 }
 
 char buf[64];
@@ -72,16 +112,7 @@ char *string_format(char *fmt, ...) {
 
 				break;
 
-			case '\x03': // %s from EEPROM
-				s = string_read_from_eeprom(va_arg(ap, int));
-				
-				while((p = *s++)) {
-					*dest++ = p;
-				}
-
-				break;
-
-			case '\x04': // %c
+			case '\x03': // %c
 				*dest++ = (char)va_arg(ap, int);
 				break;
 

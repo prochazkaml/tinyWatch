@@ -63,7 +63,7 @@ int main() {
 
 			clock_draw(hour, minute, second, CLOCK_Y);
 
-			char *str = string_format("\x03, \x02 \x03", EE_daylist + weekday, day, EE_monthlist + month); 
+			char *str = string_format("\x01, \x02 \x01", string_get_day_of_week(weekday), day, string_get_month(month)); 
 			char_string_draw(str, STR_CENTER, 44);
 
 			oled_refresh();

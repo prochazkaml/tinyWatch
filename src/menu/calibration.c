@@ -36,7 +36,7 @@ void menu_calibration() {
 			uint16_t tmpval = val;
 
 			for(uint8_t i = 0; i < 4; i++) {
-				char_draw(EEBYTE(EE_hexlist + buf[i]), 64 - 5 * 4 - 3 + i * 5, 33);
+				char_draw(nibble_to_hex(buf[i]), 64 - 5 * 4 - 3 + i * 5, 33);
 			}
 
 			char_string_draw("Done", 64 + 3, 33);

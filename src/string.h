@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-char *string_read_from_eeprom(uint8_t key);
+const char *string_get_day_of_week(int day);
+const char *string_get_month(int month);
 char *string_format(char *fmt, ...);
 
 #endif

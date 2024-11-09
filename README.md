@@ -65,7 +65,7 @@ After flashing the firmware, you will want to set up the clock. To do that, pres
 
 After a few hours/days of usage, you might notice that the clock drifts. To remedy this issue, press the **left and middle button** together to enter the clock calibration menu. There, you will be presented by a 16-bit hex value (default is 8163). With the **left** and **right** button, you may move the cursor. To edit a value of a digit, press the **middle** button (the cursor will appear above the digit so that it is apparent what the buttons currently do) and adjust the value using the **left** and **right** button. To confirm your choice, press the **middle** button again to go back to cursor mode. Choose `Done` and press the **middle** button to exit.
 
-Remember that this calibration value *is kept in RAM* and will be reset if the ATtiny resets (in case of the battery draining out or flashing an updated firmware).
+The calibration value is stored in EEPROM, so it should remain even after a battery replacement.
 
 TODO: Temperature & voltage sensing for better accuracy OR use an external 32768 Hz watch crystal so that this calibration is unnecessary.
 

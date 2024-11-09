@@ -26,7 +26,7 @@ void i2c_init() {
 }
 
 void i2c_deinit() {
-	// Disable the I2C lines, drive them high
+	// Disable the I2C lines, drive them low
 
 	PORTB.PIN0CTRL = 0;
 	PORTB.PIN1CTRL = 0;

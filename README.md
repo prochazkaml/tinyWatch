@@ -45,18 +45,18 @@ The positive wire of the battery should be soldered to the "squiggly" line on th
 
 ## Firmware building instructions
 
-The tinyWatch's firmware is written in AVR assembly, so you'll need the [AVRA](https://avra.sourceforge.net/) assembler, along with `cpp`, the C preprocessor (as the firmware uses some syntax which AVRA does not support by default). If you have `gcc` installed, you also have `cpp` installed and you can proceed.
+The tinyWatch's firmware is written in C, so you'll need the AVR port of GCC (on Arch Linux, install `avr-gcc`, `avr-binutils` and `avr-libc`)
 
 Bulding the firmware is as easy as running the following command:
 
 ```bash
-./build.sh dry
+make
 ```
 
-If you have a [jtag2updi](https://github.com/ElTangas/jtag2updi) programmer attached to the PC as well as the watch and want to upload the firmware to the watch, run the following:
+If you have a [serialupdi](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) programmer attached to the PC as well as the watch and want to upload the firmware to the watch, run the following:
 
 ```bash
-./build.sh
+make run
 ```
 
 ## Setup
@@ -70,3 +70,4 @@ Remember that this calibration value *is kept in RAM* and will be reset if the A
 TODO: Temperature & voltage sensing for better accuracy OR use an external 32768 Hz watch crystal so that this calibration is unnecessary.
 
 That's it! Enjoy your watch. More features (including a serial monitor with text input) coming soon ;)
+

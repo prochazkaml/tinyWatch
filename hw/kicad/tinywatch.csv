@@ -3,7 +3,6 @@
 "C2,C3,C4,C5,C8","1u","Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder","5"
 "C6","2u2","Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder","1"
 "C7","10u","Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder","1"
-"C9,C10","8.2p","Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder","2"
 "D1","1N4148W","Diode_SMD:D_SOD-123","1"
 "J1","Conn_01x04","Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal","1"
 "J2","Conn_01x30","Display:OLED-128O064D","1"
@@ -11,4 +10,4 @@
 "R5","4k7","Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder","1"
 "SW1,SW2,SW3","SW_Push","Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin","3"
 "U1","ATtiny1614-SS","Package_SO:SOIC-14_3.9x8.7mm_P1.27mm","1"
-"Y1","32.768 kHz","Crystal:Crystal_DS10_D1.0mm_L4.3mm_Horizontal","1"
+"Y2","ECS-327TXO-30","Oscillator:Oscillator_SMD_EuroQuartz_XO32-4Pin_3.2x2.5mm","1"

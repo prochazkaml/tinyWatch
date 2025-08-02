@@ -86,6 +86,11 @@ and adjust the value using the **left** and **right** button.
 
 To confirm your choice, press the **middle** button again to go back to cursor mode. Choose `Done` and press the **middle** button to exit.
 
+## General usage
+
+Once your watch is set up with the correct time, it is now ready to serve your everyday needs of checking the time.
+Simply push any of its buttons and it will light up for a few seconds to tell you the time, before turning off again to conserve power.
+
 ---
 
 That's it! Enjoy your watch. More features coming soon ;)

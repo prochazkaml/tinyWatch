@@ -33,7 +33,7 @@ Of course, you will then need to populate the manufactured PCB with components. 
 |10 μF capacitor|0603|1|1276-1119-1-ND|
 |1N4148W diode|SOD-123|1|311-4.70KHRTR-ND|
 |4-pin straight female header|4x2.54 pitch|1|S7037-ND|
-|SSD1306 128x64 0.96" OLED panel|30 pin flat ribbon, 0.7 mm pitch|1|3190-DLC0096DNOG-W-5-ND (but you can probably get it much cheaper elsewhere)|
+|SSD1306 128x64 0.96" OLED panel|30 pin flat ribbon, 0.7 mm pitch|1|3190-DLC0096DNOG-W-5-ND (but you can probably get it much cheaper [elsewhere](https://www.aliexpress.com/item/1005006114087000.html))|
 |910k resistor|0603|1|13-AC0603FR-07910KLTR-ND|
 |4.7k resistor|0603|1|311-4.70KHRTR-ND|
 |Push button|6.7x4.1 mm|3|CKN12330-1-ND|

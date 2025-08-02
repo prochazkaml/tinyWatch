@@ -1,0 +1,26 @@
+[package]
+name = "tinywatch"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "tinywatch"
+test = false
+bench = false
+
+[profile.dev]
+panic = "abort"
+lto = true
+opt-level = "s"
+#debug = false
+codegen-units = 1
+overflow-checks = false
+
+[dependencies]
+panic-abort = "0.3.2"
+avr-device = { version = "0.7.0", features = ["attiny1614", "rt"] }
+heapless = { version = "0.8.0", features = ["ufmt"] }
+num-traits = { version = "0.2.19", default-features = false }
+num-derive = "0.4"
+ufmt = "0.2.0"
+

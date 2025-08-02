@@ -46,29 +46,47 @@ The positive and negative wires of the battery should be soldered to the bottom 
 
 ## Firmware building instructions
 
-The tinyWatch's firmware is written in C, so you'll need the AVR port of GCC (on Arch Linux, install `avr-gcc`, `avr-binutils` and `avr-libc`)
+The tinyWatch's firmware is written in Rust, so you'll need the Rust toolchain to be installed.
 
 Bulding the firmware is as easy as running the following command:
 
 ```bash
-make all REVISION=2
+cargo build
 ```
 
-**NOTE**: The current hardware in this repository is revision 2. The old hardware (without the external crystal) is revision 1.
+**NOTE**: This firmware is currently only compatible with revision 2 hardware. The old revision 1 hardware is only supported by the [old C-based firmware](https://github.com/prochazkaml/tinyWatch/tree/2073f80b21bf5213d320747aeb9541f89d2ae41b).
 
 If you have a [serialupdi](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) programmer attached to the PC as well as the watch and want to upload the firmware to the watch, run the following:
 
 ```bash
-make run REVISION=2
+avrdude -p attiny1614 -c serialupdi -P /dev/ttyUSB0 -v -U flash:w:target/avr-none/debug/tinywatch.elf
 ```
 
 ## Setup
 
-After flashing the firmware, you will want to set up the clock. To do that, press the **left and right button** at simultaneously. Then, using the **left** and **right** button, you will set the value on-screen and then press the **middle** button to confirm your selection and move onto the next value or finish the clock setup if you're done.
+After flashing the firmware, you will want to set up the clock.
+To do that, press the **left and right button** at simultaneously.
+Then, using the **left** and **right** button, you will set the value on-screen and then press the **middle** button to confirm your selection and move onto the next value or finish the clock setup if you're done.
+You will be asked at the end whether the entered values are correct.
 
-After a few hours/days of usage, you might notice that the clock drifts. To remedy this issue, press the **left and middle button** together to enter the clock calibration menu. There, you will be presented by a 16-bit hex value (default is 8163). With the **left** and **right** button, you may move the cursor. To edit a value of a digit, press the **middle** button (the cursor will appear above the digit so that it is apparent what the buttons currently do) and adjust the value using the **left** and **right** button. To confirm your choice, press the **middle** button again to go back to cursor mode. Choose `Done` and press the **middle** button to exit.
+## Oscillator calibration
 
-The calibration value is stored in EEPROM, so it should remain even after a battery replacement.
+> [!NOTE]  
+> Revision 2 hardware uses a high quality temperature-compensated crystal oscillator with at most ±5 ppm of error, resulting in less than 0.5 seconds of drift per day.
+> With this hardware, this option should be left alone.
 
-That's it! Enjoy your watch. More features (including a serial monitor with text input) coming soon ;)
+If you experience severe drifts with the watch (more than 1 second per day), it is possible to trim the oscillator to a more precise value.
+
+To remedy this issue, press the **left and middle button** together to enter the clock calibration menu.
+There, you will be presented by a 16-bit hex value (the default is 8000, corresponding to the 32.768 kHz of the main oscillator).
+With the **left** and **right** button, you can move the cursor.
+
+To edit a value of a digit, press the **middle** button (the cursor will appear above the digit so that it is apparent what the buttons currently do)
+and adjust the value using the **left** and **right** button.
+
+To confirm your choice, press the **middle** button again to go back to cursor mode. Choose `Done` and press the **middle** button to exit.
+
+---
+
+That's it! Enjoy your watch. More features coming soon ;)
 

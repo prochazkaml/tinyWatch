@@ -51,7 +51,7 @@ The tinyWatch's firmware is written in Rust, so you'll need the Rust toolchain t
 Bulding the firmware is as easy as running the following command:
 
 ```bash
-cargo build
+cargo build --release
 ```
 
 **NOTE**: This firmware is currently only compatible with revision 2 hardware. The old revision 1 hardware is only supported by the [old C-based firmware](https://github.com/prochazkaml/tinyWatch/tree/2073f80b21bf5213d320747aeb9541f89d2ae41b).
@@ -59,7 +59,7 @@ cargo build
 If you have a [serialupdi](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) programmer attached to the PC as well as the watch and want to upload the firmware to the watch, run the following:
 
 ```bash
-avrdude -p attiny1614 -c serialupdi -P /dev/ttyUSB0 -v -U flash:w:target/avr-none/debug/tinywatch.elf
+avrdude -p attiny1614 -c serialupdi -P /dev/ttyUSB0 -v -U flash:w:target/avr-none/release/tinywatch.elf
 ```
 
 ## Setup

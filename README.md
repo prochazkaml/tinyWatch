@@ -40,7 +40,7 @@ Of course, you will then need to populate the manufactured PCB with components. 
 |ATtiny1614|SOIC-14|1|ATTINY1614-SSN-ND|
 |32.768 kHz oscillator|3.2x2.5 mm|1|50-ECS-327TXO-30-CT-ND|
 
-What is not included in the BOM is a **CR2032** battery, which will be soldered via wires to the mainboard. I recommend getting one of those which have pre-welded contacts on the terminals, to which you will then solder to – otherwise you will have to weld those contacts on yourself. [**It is highly discouraged to solder directly to the cells.**](https://www.youtube.com/watch?v=wmnAx6pzDoQ).
+What is not included in the BOM is a **CR2032** battery, which will be soldered via wires to the mainboard. I recommend getting one of those which have pre-welded contacts on the terminals, to which you will then solder to – otherwise you will have to weld those contacts on yourself. [**It is highly discouraged to solder directly to the cells.**](https://www.youtube.com/watch?v=wmnAx6pzDoQ)
 
 The positive and negative wires of the battery should be soldered to the bottom two pads.
 

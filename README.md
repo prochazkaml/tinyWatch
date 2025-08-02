@@ -21,7 +21,7 @@ These parts are held together with an **M3 nut and M3x6 screw**.
 
 ## PCB & Hardware
 
-The circuit diagram as well as the PCB were designed in KiCad (with [mitxela's rounded tracks plugin](https://github.com/mitxela/kicad-round-tracks)), the project files are available in the [hw/kicad](https://github.com/prochazkaml/tinyWatch/tree/master/hw/kicad) directory. Many prototype PCB manufacturers support uploading raw KiCad files directly without the need to generate Gerber files. Recommended PCB thickness is ~1.5 mm.
+The circuit diagram as well as the PCB were designed in KiCad, the project files are available in the [hw/kicad](https://github.com/prochazkaml/tinyWatch/tree/master/hw/kicad) directory. Many prototype PCB manufacturers support uploading raw KiCad files directly without the need to generate Gerber files. Recommended PCB thickness is 1.6 mm.
 
 Of course, you will then need to populate the manufactured PCB with components. The bill of materials is available [here](https://github.com/prochazkaml/tinyWatch/blob/master/hw/kicad/tinywatch.csv) in CSV format. In summary, you'll need:
 

@@ -59,7 +59,7 @@ pub fn run(oled: &mut Oled, buttons: &mut Buttons, rtc: &Rtc) {
 		draw::date(oled, &data, 40);
 
 		draw::left_button_hint(oled, b"Confirm");
-		draw::right_button_hint(oled, b"Retry");
+		draw::right_button_hint(oled, b"Cancel");
 
 		oled.refresh();
 		
@@ -70,11 +70,11 @@ pub fn run(oled: &mut Oled, buttons: &mut Buttons, rtc: &Rtc) {
 			}
 
 			if buttons.left().pressed() {
-				break 'inputloop;
+				break 'inputloop
 			}
 
 			if buttons.right().pressed() {
-				continue 'inputloop;
+				return
 			}
 		}
 	}

@@ -312,6 +312,7 @@ impl<'a> Rtc<'a> {
 			system::access_protected_io(peri);
 			peri.CLKCTRL.xosc32kctrla.write(|reg| reg
 				.enable().set_bit()
+				.sel().set_bit()
 				.runstdby().set_bit());
 
 			// Run the RTC from an external crystal/oscillator

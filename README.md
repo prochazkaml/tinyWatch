@@ -67,6 +67,18 @@ If you have a [serialupdi](https://github.com/SpenceKonde/AVR-Guidance/blob/mast
 avrdude -p attiny1614 -c serialupdi -P /dev/ttyUSB0 -v -U flash:w:target/avr-none/release/tinywatch.elf
 ```
 
+## Power consumption
+
+The watch consumes roughly **4.4 mA** while the screen is on, and about **3.4 μA** while the screen is off.
+
+If you look at your watch for a total of 5 minutes each day, that would result in about **447 μAh** of power consumption **per day**. With this usage, the 220 mAh battery in the watch should last **more than a year**.
+
+![active_power_consumption](doc/power-consumption/active.png)
+
+![idle_power_consumption](doc/power-consumption/idle.png)
+
+These measurements were taken using Nordic's [Power Profiler Kit 2](https://www.nordicsemi.com/Products/Development-hardware/Power-Profiler-Kit-2). The [raw capture file](doc/tinywatch_power_consumption.ppk2) can be viewed in the Power Profiler applet of the free and open source [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-Desktop) software.
+
 ## Setup
 
 After flashing the firmware, you will want to set up the clock.

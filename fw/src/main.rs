@@ -30,8 +30,8 @@ fn draw_date_time(oled: &mut Oled, time: &RtcData) {
 	oled.refresh();
 }
 
-fn redraw_clock(rtc: &Rtc, oled: &mut Oled) {
-	draw_date_time(oled, &rtc.get_current_time());
+fn redraw_clock(oled: &mut Oled) {
+	draw_date_time(oled, &Rtc::get_current_time());
 }
 
 fn clock_error_screen(oled: &mut Oled) {
@@ -49,18 +49,18 @@ fn clock_error_screen(oled: &mut Oled) {
 fn main() -> ! {
 	system::init();
 
-	let rtc = Rtc::init();
+	Rtc::init();
 	let mut buttons = Buttons::new();
 	
 	loop {
-		rtc.reset_sleep_counter();
+		Rtc::reset_sleep_counter();
 		system::enter_high_performance();
 
 		{
 			let i2c = I2cDriver::init();
 			let mut oled = Oled::init(i2c);
 
-			redraw_clock(&rtc, &mut oled);
+			redraw_clock(&mut oled);
 
 			let mut clock_watchdog = 0;
 
@@ -71,7 +71,7 @@ fn main() -> ! {
 				buttons.update();
 
 				if buttons.any_pressed() {
-					rtc.reset_sleep_counter();
+					Rtc::reset_sleep_counter();
 				}
 
 				if buttons.left().held_down() && buttons.right().held_down() {
@@ -80,10 +80,10 @@ fn main() -> ! {
 
 					system::enter_high_performance();
 
-					menu::setup::run(&mut oled, &mut buttons, &rtc);
+					menu::setup::run(&mut oled, &mut buttons);
 
-					redraw_clock(&rtc, &mut oled);
-					rtc.reset_sleep_counter();
+					redraw_clock(&mut oled);
+					Rtc::reset_sleep_counter();
 					continue
 				}
 
@@ -93,16 +93,16 @@ fn main() -> ! {
 
 					system::enter_high_performance();
 
-					menu::calibration::run(&mut oled, &mut buttons, &rtc);
+					menu::calibration::run(&mut oled, &mut buttons);
 
-					redraw_clock(&rtc, &mut oled);
-					rtc.reset_sleep_counter();
+					redraw_clock(&mut oled);
+					Rtc::reset_sleep_counter();
 					continue
 				}
 
-				if rtc.should_go_to_sleep() { break }
+				if Rtc::should_go_to_sleep() { break }
 
-				if let Some(time) = rtc.updated() {
+				if let Some(time) = Rtc::updated() {
 					system::enter_high_performance();
 					draw_date_time(&mut oled, &time);
 					clock_watchdog = 0;
@@ -115,7 +115,7 @@ fn main() -> ! {
 					clock_error_screen(&mut oled);
 					system::enter_low_power();
 					system::low_power_delay(5000);
-					rtc.switch_to_internal_clock();
+					Rtc::switch_to_internal_clock();
 					clock_watchdog = 0;
 				}
 			}

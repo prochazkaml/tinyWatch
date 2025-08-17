@@ -3,9 +3,10 @@ use crate::system::{peri, delay};
 
 const OLED_I2C_ADDR: u8 = 0x3c;
 
+static mut LCD_BUFFER: [u8; 1024] = [0u8; 1024];
+
 pub struct Oled {
-	i2c: I2cDriver,
-	buffer: [u8; 1024]
+	i2c: I2cDriver
 }
 
 pub enum Color {
@@ -100,8 +101,7 @@ impl Oled {
 		}
 
 		Self {
-			i2c,
-			buffer: [0u8; 1024]
+			i2c
 		}
 	}
 
@@ -119,7 +119,7 @@ impl Oled {
 				io.write(0x40);
 
 				for x in 0..16 {
-					io.write(self.buffer[y * 16 + x]);
+					io.write(unsafe { LCD_BUFFER[y * 16 + x] });
 				}
 			});
 		}
@@ -130,9 +130,11 @@ impl Oled {
 		let offset = x as usize | ((y as usize & 0x38) << 4);
 		let bit = 1 << (y & 7);
 
-		match color {
-			Color::Black => self.buffer[offset] &= !bit,
-			Color::White => self.buffer[offset] |= bit
+		unsafe {
+			match color {
+				Color::Black => LCD_BUFFER[offset] &= !bit,
+				Color::White => LCD_BUFFER[offset] |= bit
+			}
 		}
 	}
 
@@ -148,7 +150,7 @@ impl Oled {
 
 	/// Clears the framebuffer with black pixels.
 	pub fn clear_framebuffer(&mut self) {
-		self.buffer.fill(0);
+		unsafe { (&mut *(&raw mut LCD_BUFFER)).fill(0); }
 	}
 }
 

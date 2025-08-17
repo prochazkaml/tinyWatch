@@ -48,9 +48,9 @@ impl<'a> Buttons<'a> {
 		// All GPIO is already initialized at startup as inputs with pullups,
 		// so no special init is needed here
 
-		peri.PORTA.pin5ctrl.modify(|_, reg| reg.isc().level());
-		peri.PORTA.pin6ctrl.modify(|_, reg| reg.isc().level());
-		peri.PORTA.pin7ctrl.modify(|_, reg| reg.isc().level());
+		peri.PORTA.pin5ctrl.modify(|_, reg| reg.isc().bothedges());
+		peri.PORTA.pin6ctrl.modify(|_, reg| reg.isc().bothedges());
+		peri.PORTA.pin7ctrl.modify(|_, reg| reg.isc().bothedges());
 
 		Self {
 			peri,

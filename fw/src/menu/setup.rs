@@ -41,8 +41,8 @@ fn run_selector<T: Chargen, V>(oled: &mut Oled, buttons: &mut Buttons, old: &Rtc
 	}
 }
 
-pub fn run(oled: &mut Oled, buttons: &mut Buttons) {
-	let mut data = Rtc::get_current_time();
+pub fn run(oled: &mut Oled, buttons: &mut Buttons, rtc: &Rtc) {
+	let mut data = rtc.get_current_time();
 
 	'inputloop: loop {
 		run_selector::<BigFont, _>(oled, buttons, &data.clone(), &mut data.year);
@@ -79,6 +79,6 @@ pub fn run(oled: &mut Oled, buttons: &mut Buttons) {
 		}
 	}
 
-	Rtc::set_current_time(data);
+	rtc.set_current_time(data);
 }
 

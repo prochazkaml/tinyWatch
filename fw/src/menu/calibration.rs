@@ -4,8 +4,8 @@ use crate::buttons::Buttons;
 use crate::rtc::Rtc;
 use crate::chargen::{Chargen, SmallFont};
 
-pub fn run(oled: &mut Oled, buttons: &mut Buttons) {
-	let mut val = Rtc::get_oscillator_trim();
+pub fn run(oled: &mut Oled, buttons: &mut Buttons, rtc: &Rtc) {
+	let mut val = rtc.get_oscillator_trim();
 	let mut cursor = 4;
 	let mut selected = false;
 
@@ -99,6 +99,6 @@ pub fn run(oled: &mut Oled, buttons: &mut Buttons) {
 		}
 	}
 
-	Rtc::set_oscillator_trim(val);
+	rtc.set_oscillator_trim(val);
 }
 

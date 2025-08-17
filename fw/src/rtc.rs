@@ -301,7 +301,7 @@ static mut RTC_DATA: RtcInterruptContext = RtcInterruptContext::init();
 pub struct Rtc {}
 
 impl Rtc {
-	pub fn init() {
+	pub fn init() -> Self {
 		avr_device::interrupt::free(|_| {
 			let peri = peri();
 
@@ -326,10 +326,14 @@ impl Rtc {
 
 		unsafe { avr_device::interrupt::enable(); }
 
-		Self::set_oscillator_trim(0x8000); // Default for precise 32.768 kHz
+		let new = Self {};
+
+		new.set_oscillator_trim(0x8000); // Default for precise 32.768 kHz
+
+		new
 	}
 
-	pub fn switch_to_internal_clock() {
+	pub fn switch_to_internal_clock(&self) {
 		let peri = peri();
 
 		peri.RTC.clksel.write(|reg| reg.clksel().int32k());
@@ -337,29 +341,29 @@ impl Rtc {
 		peri.CLKCTRL.osc32kctrla.write(|reg| reg.runstdby().set_bit());
 	}
 
-	pub fn pause() {
+	pub fn pause(&self) {
 		peri().RTC.ctrla.modify(|_, reg| reg.rtcen().clear_bit());
 	}
 
-	pub fn resume() {
+	pub fn resume(&self) {
 		let peri = peri();
 
 		peri.RTC.cnt.write(|reg| reg.bits(0));
 		peri.RTC.ctrla.modify(|_, reg| reg.rtcen().set_bit());
 	}
 
-	pub fn set_oscillator_trim(trim: u16) {
+	pub fn set_oscillator_trim(&self, trim: u16) {
 		let peri = peri();
 
 		peri.RTC.cnt.write(|reg| reg.bits(0));
 		peri.RTC.per.write(|reg| reg.bits(trim));
 	}
 
-	pub fn get_oscillator_trim() -> u16 {
+	pub fn get_oscillator_trim(&self) -> u16 {
 		peri().RTC.per.read().bits()
 	}
 
-	pub fn updated() -> Option<RtcData> {
+	pub fn updated(&self) -> Option<RtcData> {
 		// SAFETY: Accesses to the global RTC state are done in a critical section, effectively acting as a mutex.
 		avr_device::interrupt::free(|_| unsafe {
 			if !RTC_DATA.updated { None? }
@@ -371,21 +375,21 @@ impl Rtc {
 		})
 	}
 
-	pub fn reset_sleep_counter() {
+	pub fn reset_sleep_counter(&self) {
 		// SAFETY: Accesses to the global RTC state are done in a critical section, effectively acting as a mutex.
 		avr_device::interrupt::free(|_| unsafe {
 			RTC_DATA.sleep_timer = MAX_TIMEOUT;
 		});
 	}
 
-	pub fn should_go_to_sleep() -> bool {
+	pub fn should_go_to_sleep(&self) -> bool {
 		// SAFETY: Accesses to the global RTC state are done in a critical section, effectively acting as a mutex.
 		avr_device::interrupt::free(|_| unsafe {
 			RTC_DATA.sleep_timer == 0
 		})
 	}
 
-	pub fn get_current_time() -> RtcData {
+	pub fn get_current_time(&self) -> RtcData {
 		// SAFETY: Accesses to the global RTC state are done in a critical section, effectively acting as a mutex.
 		avr_device::interrupt::free(|_| unsafe {
 			let ctx = &*&raw const RTC_DATA;
@@ -393,7 +397,7 @@ impl Rtc {
 		})
 	}
 
-	pub fn set_current_time(time: RtcData) {
+	pub fn set_current_time(&self, time: RtcData) {
 		peri().RTC.cnt.write(|reg| reg.bits(0));
 
 		// SAFETY: Accesses to the global RTC state are done in a critical section, effectively acting as a mutex.

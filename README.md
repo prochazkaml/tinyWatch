@@ -4,14 +4,14 @@ A simple ATtiny1614-based wristwatch with an OLED display, a couple of buttons a
 
 ![tinywatch](https://user-images.githubusercontent.com/41787099/195558866-5d9a7961-0574-4461-b3f9-89c7d53c51ee.jpg)
 
-To build your very own tinyWatch, you'll need to source the components, get a PCB made (or make it yourself, if you're brave enough), get the plastic parts 3D printed (or, again, print it yourself if you've already got a printer) and find a compatible 18 mm wrist strap + push pin (or edit the .scad files if you've got some other one).
+To build your very own tinyWatch, you'll need to source the components, get a PCB made (or make it yourself, if you're brave enough), get the plastic parts 3D printed (or, again, print it yourself if you've already got a printer) and find a compatible 18 mm watch band + push pin (or edit the .scad files if you've got some other one).
 
 ## Plastic parts
 
 The plastic parts of the tinyWatch are expected to be 3D printed (tested FDM, but SLA should work as well). They consist of:
 
 - the back piece where the battery and PCB will be fit
-- the front piece which will hold the OLED panel as well as the buttons in place, it also contains a pair of holes at each end for fitting a wrist strap push pin
+- the front piece which will hold the OLED panel as well as the buttons in place, it also contains a pair of holes at each end for fitting a watch band push pin
 - OLED support piece which will make the panel not fall inside of the watch
 - 3x button caps
 
@@ -42,6 +42,8 @@ Of course, you will then need to populate the manufactured PCB with components. 
 
 What is not included in the BOM is a **CR2032** battery, with specially shaped nickel strips welded to its terminals.
 The assembly instructions below go into more detail on how to prepare and connect the battery correctly.
+
+A cheap and perfectly usable watch band is available for example from [here](https://www.aliexpress.com/item/1005002369169370.html), just remember to select the 18 mm option. I personally opted for the "ML-Black" variant, it works just fine; it even comes with the required push pins embedded into the straps themselves.
 
 ## Assembly instructions
 

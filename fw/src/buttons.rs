@@ -1,4 +1,4 @@
-use avr_device::attiny1614::Peripherals;
+use crate::system::peri;
 
 #[derive(Default, Clone, Copy)]
 pub struct Button {
@@ -38,28 +38,28 @@ impl Button {
 	}
 }
 
-pub struct Buttons<'a> {
-	peri: &'a Peripherals,
+pub struct Buttons {
 	buttons: [Button; 3],
 }
 
-impl<'a> Buttons<'a> {
-	pub fn new(peri: &'a Peripherals) -> Self {
+impl Buttons {
+	pub fn new() -> Self {
 		// All GPIO is already initialized at startup as inputs with pullups,
 		// so no special init is needed here
+		
+		let peri = peri();
 
 		peri.PORTA.pin5ctrl.modify(|_, reg| reg.isc().bothedges());
 		peri.PORTA.pin6ctrl.modify(|_, reg| reg.isc().bothedges());
 		peri.PORTA.pin7ctrl.modify(|_, reg| reg.isc().bothedges());
 
 		Self {
-			peri,
 			buttons: [Button::default(); 3]
 		}
 	}
 
 	pub fn update(&mut self) {
-		let inputs = self.peri.PORTA.in_.read();
+		let inputs = peri().PORTA.in_.read();
 
 		self.buttons[0].update(inputs.pa5().bit_is_clear());
 		self.buttons[1].update(inputs.pa6().bit_is_clear());
@@ -89,9 +89,9 @@ impl<'a> Buttons<'a> {
 
 #[avr_device::interrupt(attiny1614)]
 fn PORTA_PORT() {
-	unsafe { Peripherals::steal().PORTA.intflags.write(|reg| reg
+	peri().PORTA.intflags.write(|reg| reg
 		.pa5().set_bit()
 		.pa6().set_bit()
-		.pa7().set_bit()); }
+		.pa7().set_bit());
 }
 

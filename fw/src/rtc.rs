@@ -1,6 +1,4 @@
-use avr_device::attiny1614::Peripherals;
-
-use crate::system;
+use crate::system::{peri, access_protected_io};
 
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
@@ -300,16 +298,16 @@ impl RtcInterruptContext {
 
 static mut RTC_DATA: RtcInterruptContext = RtcInterruptContext::init();
 
-pub struct Rtc<'a> {
-	peri: &'a Peripherals
-}
+pub struct Rtc {}
 
-impl<'a> Rtc<'a> {
-	pub fn init(peri: &'a Peripherals) -> Self {
+impl Rtc {
+	pub fn init() -> Self {
 		avr_device::interrupt::free(|_| {
+			let peri = peri();
+
 			// Enable the 32.768 kHz clock when in standby
 
-			system::access_protected_io(peri);
+			access_protected_io();
 			peri.CLKCTRL.xosc32kctrla.write(|reg| reg
 				.enable().set_bit()
 				.sel().set_bit()
@@ -328,7 +326,7 @@ impl<'a> Rtc<'a> {
 
 		unsafe { avr_device::interrupt::enable(); }
 
-		let new = Self { peri };
+		let new = Self {};
 
 		new.set_oscillator_trim(0x8000); // Default for precise 32.768 kHz
 
@@ -336,27 +334,33 @@ impl<'a> Rtc<'a> {
 	}
 
 	pub fn switch_to_internal_clock(&self) {
-		self.peri.RTC.clksel.write(|reg| reg.clksel().int32k());
-		self.peri.CLKCTRL.xosc32kctrla.write(|reg| reg.enable().clear_bit());
-		self.peri.CLKCTRL.osc32kctrla.write(|reg| reg.runstdby().set_bit());
+		let peri = peri();
+
+		peri.RTC.clksel.write(|reg| reg.clksel().int32k());
+		peri.CLKCTRL.xosc32kctrla.write(|reg| reg.enable().clear_bit());
+		peri.CLKCTRL.osc32kctrla.write(|reg| reg.runstdby().set_bit());
 	}
 
 	pub fn pause(&self) {
-		self.peri.RTC.ctrla.modify(|_, reg| reg.rtcen().clear_bit());
+		peri().RTC.ctrla.modify(|_, reg| reg.rtcen().clear_bit());
 	}
 
 	pub fn resume(&self) {
-		self.peri.RTC.cnt.write(|reg| reg.bits(0));
-		self.peri.RTC.ctrla.modify(|_, reg| reg.rtcen().set_bit());
+		let peri = peri();
+
+		peri.RTC.cnt.write(|reg| reg.bits(0));
+		peri.RTC.ctrla.modify(|_, reg| reg.rtcen().set_bit());
 	}
 
 	pub fn set_oscillator_trim(&self, trim: u16) {
-		self.peri.RTC.cnt.write(|reg| reg.bits(0));
-		self.peri.RTC.per.write(|reg| reg.bits(trim));
+		let peri = peri();
+
+		peri.RTC.cnt.write(|reg| reg.bits(0));
+		peri.RTC.per.write(|reg| reg.bits(trim));
 	}
 
 	pub fn get_oscillator_trim(&self) -> u16 {
-		self.peri.RTC.per.read().bits()
+		peri().RTC.per.read().bits()
 	}
 
 	pub fn updated(&self) -> Option<RtcData> {
@@ -394,7 +398,7 @@ impl<'a> Rtc<'a> {
 	}
 
 	pub fn set_current_time(&self, time: RtcData) {
-		self.peri.RTC.cnt.write(|reg| reg.bits(0));
+		peri().RTC.cnt.write(|reg| reg.bits(0));
 
 		// SAFETY: Accesses to the global RTC state are done in a critical section, effectively acting as a mutex.
 		avr_device::interrupt::free(|_| unsafe {
@@ -405,7 +409,7 @@ impl<'a> Rtc<'a> {
 
 #[avr_device::interrupt(attiny1614)]
 fn RTC_CNT() {
-	unsafe { Peripherals::steal().RTC.intflags.write(|reg| reg.ovf().set_bit()); }
+	peri().RTC.intflags.write(|reg| reg.ovf().set_bit());
 
 	// SAFETY: Accesses to the global RTC state outside this interrupt handler are done in critical sections, effectively acting as a mutex.
 	avr_device::interrupt::free(|_| unsafe {

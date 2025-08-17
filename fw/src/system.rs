@@ -1,5 +1,9 @@
 use avr_device::attiny1614::Peripherals;
 
+pub fn peri() -> Peripherals {
+	unsafe { core::mem::transmute(()) } // The Peripherals struct literally is 0 bytes in size anyways
+}
+
 pub fn delay(ms: usize) {
 	for _ in 0..ms {
 		avr_device::asm::delay_cycles(5000); // At 5 MHz
@@ -13,31 +17,33 @@ pub fn low_power_delay(ms: usize) {
 }
 
 #[inline]
-pub fn access_protected_io(peri: &Peripherals) {
-	peri.CPU.ccp.write(|reg| reg.ccp().ioreg());
+pub fn access_protected_io() {
+	peri().CPU.ccp.write(|reg| reg.ccp().ioreg());
 }
 
 /// Puts the CPU into high-performance mode (5 MHz).
-pub fn enter_high_performance(peri: &Peripherals) {
-	access_protected_io(peri);
-	peri.CLKCTRL.mclkctrlb.write(|reg| reg
+pub fn enter_high_performance() {
+	access_protected_io();
+	peri().CLKCTRL.mclkctrlb.write(|reg| reg
 		.pdiv()._4x()
 		.pen().set_bit());
 }
 
 /// Puts the CPU into low-power mode (312.5 kHz).
-pub fn enter_low_power(peri: &Peripherals) {
-	access_protected_io(peri);
-	peri.CLKCTRL.mclkctrlb.write(|reg| reg
+pub fn enter_low_power() {
+	access_protected_io();
+	peri().CLKCTRL.mclkctrlb.write(|reg| reg
 		.pdiv()._64x()
 		.pen().set_bit());
 }
 
 /// Initializes the microcontroller.
-pub fn init(peri: &Peripherals) {
+pub fn init() {
+	let peri = peri();
+
 	// Set correct interrupt location
 
-	access_protected_io(peri);
+	access_protected_io();
 	peri.CPUINT.ctrla.write(|reg| reg.ivsel().set_bit());
 
 	// Set pullups on all pins, otherwise they will oscillate → consume power
@@ -77,10 +83,10 @@ pub fn init(peri: &Peripherals) {
 }
 
 /// Enters sleep mode. Will wake up with the next interrupt.
-pub fn sleep(peri: &Peripherals) {
+pub fn sleep() {
 	// Enable standby mode
 	
-	peri.SLPCTRL.ctrla.write(|reg| reg
+	peri().SLPCTRL.ctrla.write(|reg| reg
 		.smode().stdby()
 		.sen().set_bit());
 

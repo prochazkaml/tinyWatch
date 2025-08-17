@@ -1,37 +1,34 @@
-use avr_device::attiny1614::{Peripherals, PORTB, TWI0};
+use crate::system::peri;
 
-pub struct I2cIO<'a> {
-	twi: &'a TWI0
-}
+pub struct I2cIO {}
 
 /// Allows I/O on the I2C driver. Can only be obtained by initalizing a transaction.
-impl<'a> I2cIO<'a> {
+impl I2cIO {
 	/// Writes a byte onto the I2C bus.
 	pub fn write(&self, val: u8) {
-		self.twi.mdata.write(|reg| reg.bits(val));
+		let twi = peri().TWI0;
+
+		twi.mdata.write(|reg| reg.bits(val));
 
 		loop {
-			let status = self.twi.mstatus.read();
+			let status = twi.mstatus.read();
 
 			if status.rxack().bit_is_set() || status.wif().bit_is_set() { break }
 		}
 	}
 }
 
-pub struct I2cDriver<'a> {
-	port: &'a PORTB,
-	twi: &'a TWI0
-}
+pub struct I2cDriver {}
 
 /// Simple I2C driver. Hard-coded to run on pins PB0 and PB1 and use the TWI0 peripheral.
 /// Loosely based on https://www.avrfreaks.net/comment/2390341#comment-2390341
-impl<'a> I2cDriver<'a> {
+impl I2cDriver {
 	/// Initializes the I2C driver.
-	pub fn init(peri: &'a Peripherals) -> Self {
-		let port = &peri.PORTB;
-		let twi = &peri.TWI0;
-
+	pub fn init() -> Self {
 		// Set the I2C lines to inputs with internal pullups
+
+		let port = peri().PORTB;
+		let twi = peri().TWI0;
 
 		port.dirclr.write(|reg| reg
 			.pb0().set_bit()
@@ -61,7 +58,7 @@ impl<'a> I2cDriver<'a> {
 			.rif().set_bit()
 			.wif().set_bit());
 
-		Self { port, twi }
+		Self {}
 	}
 
 	/// Starts an I2C transaction.
@@ -69,35 +66,39 @@ impl<'a> I2cDriver<'a> {
 	where
 		F: FnOnce(I2cIO)
 	{
-		self.twi.mctrlb.modify(|_, reg| reg.ackact().ack());
-		self.twi.maddr.write(|reg| reg.bits(addr << 1));
+		let twi = peri().TWI0;
+
+		twi.mctrlb.modify(|_, reg| reg.ackact().ack());
+		twi.maddr.write(|reg| reg.bits(addr << 1));
 
 		loop {
-			let status = self.twi.mstatus.read();
+			let status = twi.mstatus.read();
 
 			if status.wif().bit_is_set() { break }
 		}
 
-		fun(I2cIO { twi: self.twi });
+		fun(I2cIO {});
 
-		self.twi.mctrlb.write(|reg| reg
+		twi.mctrlb.write(|reg| reg
 			.ackact().nack()
 			.mcmd().stop());
 	}
 }
 
-impl<'a> Drop for I2cDriver<'a> {
+impl Drop for I2cDriver {
 	fn drop(&mut self) {
 		// Disable the I2C lines, drive them low
 		
-		self.port.pin0ctrl.write(|reg| reg);
-		self.port.pin1ctrl.write(|reg| reg);
+		let port = peri().PORTB;
 
-		self.port.outclr.write(|reg| reg
+		port.pin0ctrl.write(|reg| reg);
+		port.pin1ctrl.write(|reg| reg);
+
+		port.outclr.write(|reg| reg
 			.pb0().set_bit()
 			.pb1().set_bit());
 
-		self.port.dirset.write(|reg| reg
+		port.dirset.write(|reg| reg
 			.pb0().set_bit()
 			.pb1().set_bit());
 	}

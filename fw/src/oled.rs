@@ -1,13 +1,10 @@
-use avr_device::attiny1614::Peripherals;
-
 use crate::i2c::I2cDriver;
-use crate::system::delay;
+use crate::system::{peri, delay};
 
 const OLED_I2C_ADDR: u8 = 0x3c;
 
-pub struct Oled<'a> {
-	peri: &'a Peripherals,
-	i2c: I2cDriver<'a>,
+pub struct Oled {
+	i2c: I2cDriver,
 	buffer: [u8; 1024]
 }
 
@@ -81,10 +78,10 @@ const PAGE_START_SEQUENCE: &[u8] = &[
 ];
 
 /// Simple SSD1305/6? OLED driver. Hard-coded for the power enable pin on PA1.
-impl<'a> Oled<'a> {
+impl Oled {
 	/// Initializes the display.
-	pub fn init(peri: &'a Peripherals, i2c: I2cDriver<'a>) -> Self {
-		let port = &peri.PORTA;
+	pub fn init(i2c: I2cDriver) -> Self {
+		let port = peri().PORTA;
 
 		// Enable power to the display
 
@@ -103,7 +100,6 @@ impl<'a> Oled<'a> {
 		}
 
 		Self {
-			peri,
 			i2c,
 			buffer: [0u8; 1024]
 		}
@@ -156,11 +152,11 @@ impl<'a> Oled<'a> {
 	}
 }
 
-impl<'a> Drop for Oled<'a> {
+impl Drop for Oled {
 	fn drop(&mut self) {
 		// Turn off the display
 
-		self.peri.PORTA.outclr.write(|reg| reg.pa4().set_bit());
+		peri().PORTA.outclr.write(|reg| reg.pa4().set_bit());
 	}
 }
 

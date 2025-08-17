@@ -19,8 +19,6 @@ use rtc::{Rtc, RtcData};
 // TODO - abort just hangs on `rjmp .`
 use panic_abort as _;
 
-use avr_device::attiny1614::Peripherals;
-
 use crate::chargen::{Chargen, SmallFont};
 
 fn draw_date_time(oled: &mut Oled, time: &RtcData) {
@@ -49,27 +47,25 @@ fn clock_error_screen(oled: &mut Oled) {
 
 #[avr_device::entry]
 fn main() -> ! {
-	let peri = unsafe { Peripherals::steal() }; // Smaller flash footprint than take()
+	system::init();
 
-	system::init(&peri);
-
-	let rtc = Rtc::init(&peri);
-	let mut buttons = Buttons::new(&peri);
+	let rtc = Rtc::init();
+	let mut buttons = Buttons::new();
 	
 	loop {
 		rtc.reset_sleep_counter();
-		system::enter_high_performance(&peri);
+		system::enter_high_performance();
 
 		{
-			let i2c = I2cDriver::init(&peri);
-			let mut oled = Oled::init(&peri, i2c);
+			let i2c = I2cDriver::init();
+			let mut oled = Oled::init(i2c);
 
 			redraw_clock(&rtc, &mut oled);
 
 			let mut clock_watchdog = 0;
 
 			loop {
-				system::enter_low_power(&peri);
+				system::enter_low_power();
 				system::low_power_delay(10);
 
 				buttons.update();
@@ -82,7 +78,7 @@ fn main() -> ! {
 					while buttons.left().held_down() { buttons.update(); }
 					while buttons.right().held_down() { buttons.update(); }
 
-					system::enter_high_performance(&peri);
+					system::enter_high_performance();
 
 					menu::setup::run(&mut oled, &mut buttons, &rtc);
 
@@ -95,7 +91,7 @@ fn main() -> ! {
 					while buttons.left().held_down() { buttons.update(); }
 					while buttons.middle().held_down() { buttons.update(); }
 
-					system::enter_high_performance(&peri);
+					system::enter_high_performance();
 
 					menu::calibration::run(&mut oled, &mut buttons, &rtc);
 
@@ -107,7 +103,7 @@ fn main() -> ! {
 				if rtc.should_go_to_sleep() { break }
 
 				if let Some(time) = rtc.updated() {
-					system::enter_high_performance(&peri);
+					system::enter_high_performance();
 					draw_date_time(&mut oled, &time);
 					clock_watchdog = 0;
 				} else {
@@ -115,9 +111,9 @@ fn main() -> ! {
 				}
 
 				if clock_watchdog > 300 { // 3 seconds, the RTC should have updated
-					system::enter_high_performance(&peri);
+					system::enter_high_performance();
 					clock_error_screen(&mut oled);
-					system::enter_low_power(&peri);
+					system::enter_low_power();
 					system::low_power_delay(5000);
 					rtc.switch_to_internal_clock();
 					clock_watchdog = 0;
@@ -132,8 +128,8 @@ fn main() -> ! {
 				break
 			}
 
-			system::enter_low_power(&peri);
-			system::sleep(&peri);
+			system::enter_low_power();
+			system::sleep();
 		}
 	}
 }

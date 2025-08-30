@@ -9,5 +9,5 @@
 "R4","910k","Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder","1"
 "R5","4k7","Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder","1"
 "SW1,SW2,SW3","SW_Push","Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin","3"
-"U1","ATtiny1614-SS","Package_SO:SOIC-14_3.9x8.7mm_P1.27mm","1"
+"U1","ATtiny3224-SS","Package_SO:SOIC-14_3.9x8.7mm_P1.27mm","1"
 "Y2","ECS-327TXO-30","Oscillator:Oscillator_SMD_EuroQuartz_XO32-4Pin_3.2x2.5mm","1"

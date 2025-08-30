@@ -8,10 +8,10 @@ impl I2cIO {
 	pub fn write(&self, val: u8) {
 		let twi = peri().TWI0;
 
-		twi.mdata.write(|reg| reg.bits(val));
+		twi.mdata().write(|reg| reg.set(val));
 
 		loop {
-			let status = twi.mstatus.read();
+			let status = twi.mstatus().read();
 
 			if status.rxack().bit_is_set() || status.wif().bit_is_set() { break }
 		}
@@ -30,31 +30,31 @@ impl I2cDriver {
 		let port = peri().PORTB;
 		let twi = peri().TWI0;
 
-		port.dirclr.write(|reg| reg
+		port.dirclr().write(|reg| reg
 			.pb0().set_bit()
 			.pb1().set_bit());
 
-		port.pin0ctrl.write(|reg| reg.pullupen().set_bit());
-		port.pin1ctrl.write(|reg| reg.pullupen().set_bit());
+		port.pin0ctrl().write(|reg| reg.pullupen().set_bit());
+		port.pin1ctrl().write(|reg| reg.pullupen().set_bit());
 
 		// Around 266 kHz
 
-		twi.mbaud.write(|reg| reg.bits(3));
+		twi.mbaud().write(|reg| reg.set(3));
 
 		// Enable TWI Master & Smart Mode
 		
-		twi.mctrla.write(|reg| reg
+		twi.mctrla().write(|reg| reg
 			.enable().set_bit()
 			.smen().set_bit());
 
 		// Purge MADDR & MDATA
 
-		twi.mctrlb.write(|reg| reg.flush().set_bit());
+		twi.mctrlb().write(|reg| reg.flush().set_bit());
 
 		// Force TWI state machine into the IDLE state
 		
-		twi.mstatus.write(|reg| reg.busstate().idle());
-		twi.mstatus.write(|reg| reg
+		twi.mstatus().write(|reg| reg.busstate().idle());
+		twi.mstatus().write(|reg| reg
 			.rif().set_bit()
 			.wif().set_bit());
 
@@ -68,18 +68,18 @@ impl I2cDriver {
 	{
 		let twi = peri().TWI0;
 
-		twi.mctrlb.modify(|_, reg| reg.ackact().ack());
-		twi.maddr.write(|reg| reg.bits(addr << 1));
+		twi.mctrlb().modify(|_, reg| reg.ackact().ack());
+		twi.maddr().write(|reg| reg.set(addr << 1));
 
 		loop {
-			let status = twi.mstatus.read();
+			let status = twi.mstatus().read();
 
 			if status.wif().bit_is_set() { break }
 		}
 
 		fun(I2cIO {});
 
-		twi.mctrlb.write(|reg| reg
+		twi.mctrlb().write(|reg| reg
 			.ackact().nack()
 			.mcmd().stop());
 	}
@@ -91,14 +91,14 @@ impl Drop for I2cDriver {
 		
 		let port = peri().PORTB;
 
-		port.pin0ctrl.write(|reg| reg);
-		port.pin1ctrl.write(|reg| reg);
+		port.pin0ctrl().write(|reg| reg);
+		port.pin1ctrl().write(|reg| reg);
 
-		port.outclr.write(|reg| reg
+		port.outclr().write(|reg| reg
 			.pb0().set_bit()
 			.pb1().set_bit());
 
-		port.dirset.write(|reg| reg
+		port.dirset().write(|reg| reg
 			.pb0().set_bit()
 			.pb1().set_bit());
 	}

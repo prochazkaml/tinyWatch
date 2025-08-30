@@ -1,6 +1,6 @@
 # tinyWatch
 
-A simple ATtiny1614-based wristwatch with an OLED display, a couple of buttons and a CR2032 battery.
+A simple ATtiny3224-based wristwatch with an OLED display, a couple of buttons and a CR2032 battery.
 
 ![tinywatch](https://user-images.githubusercontent.com/41787099/195558866-5d9a7961-0574-4461-b3f9-89c7d53c51ee.jpg)
 
@@ -37,7 +37,7 @@ Of course, you will then need to populate the manufactured PCB with components. 
 |910k resistor|0603|1|13-AC0603FR-07910KLTR-ND|
 |4.7k resistor|0603|1|311-4.70KHRTR-ND|
 |Push button|6.7x4.1 mm|3|CKN12330-1-ND|
-|ATtiny1614|SOIC-14|1|ATTINY1614-SSN-ND|
+|ATtiny3224|SOIC-14|1|150-ATTINY3224-SSURCT-ND|
 |32.768 kHz oscillator|3.2x2.5 mm|1|50-ECS-327TXO-30-CT-ND|
 
 What is not included in the BOM is a **CR2032** battery, with specially shaped nickel strips welded to its terminals.
@@ -61,12 +61,12 @@ Bulding the firmware is as easy as running the following command:
 cargo build --release
 ```
 
-**NOTE**: This firmware is currently only compatible with revision 2 hardware. The old revision 1 hardware is only supported by the [old C-based firmware](https://github.com/prochazkaml/tinyWatch/tree/2073f80b21bf5213d320747aeb9541f89d2ae41b).
+**NOTE**: This firmware is currently only compatible with revision 2 hardware with the new ATtiny3224 microcontroller. The old revision 1 hardware is only supported by the [old C-based firmware](https://github.com/prochazkaml/tinyWatch/tree/2073f80b21bf5213d320747aeb9541f89d2ae41b).
 
 If you have a [serialupdi](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) programmer attached to the PC as well as the watch and want to upload the firmware to the watch, run the following:
 
 ```bash
-avrdude -p attiny1614 -c serialupdi -P /dev/ttyUSB0 -v -U flash:w:target/avr-none/release/tinywatch.elf
+avrdude -p attiny3224 -c serialupdi -P /dev/ttyUSB0 -v -U flash:w:target/avr-none/release/tinywatch.elf
 ```
 
 ## Power consumption

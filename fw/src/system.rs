@@ -1,4 +1,4 @@
-use avr_device::attiny1614::Peripherals;
+use avr_device::attiny3224::Peripherals;
 
 pub fn peri() -> Peripherals {
 	unsafe { core::mem::transmute(()) } // The Peripherals struct literally is 0 bytes in size anyways
@@ -18,13 +18,13 @@ pub fn low_power_delay(ms: usize) {
 
 #[inline]
 pub fn access_protected_io() {
-	peri().CPU.ccp.write(|reg| reg.ccp().ioreg());
+	peri().CPU.ccp().write(|reg| reg.ccp().ioreg());
 }
 
 /// Puts the CPU into high-performance mode (5 MHz).
 pub fn enter_high_performance() {
 	access_protected_io();
-	peri().CLKCTRL.mclkctrlb.write(|reg| reg
+	peri().CLKCTRL.mclkctrlb().write(|reg| reg
 		.pdiv()._4x()
 		.pen().set_bit());
 }
@@ -32,7 +32,7 @@ pub fn enter_high_performance() {
 /// Puts the CPU into low-power mode (312.5 kHz).
 pub fn enter_low_power() {
 	access_protected_io();
-	peri().CLKCTRL.mclkctrlb.write(|reg| reg
+	peri().CLKCTRL.mclkctrlb().write(|reg| reg
 		.pdiv()._64x()
 		.pen().set_bit());
 }
@@ -44,11 +44,11 @@ pub fn init() {
 	// Set correct interrupt location
 
 	access_protected_io();
-	peri.CPUINT.ctrla.write(|reg| reg.ivsel().set_bit());
+	peri.CPUINT.ctrla().write(|reg| reg.ivsel().set_bit());
 
 	// Set pullups on all pins, otherwise they will oscillate → consume power
 
-	peri.PORTA.dir.write(|reg| reg
+	peri.PORTA.dir().write(|reg| reg
 		.pa0().clear_bit()
 		.pa1().clear_bit()
 		.pa2().clear_bit()
@@ -58,7 +58,7 @@ pub fn init() {
 		.pa6().clear_bit()
 		.pa7().clear_bit());
 
-	peri.PORTB.dir.write(|reg| reg
+	peri.PORTB.dir().write(|reg| reg
 		.pb0().clear_bit()
 		.pb1().clear_bit()
 		.pb2().clear_bit()
@@ -67,26 +67,26 @@ pub fn init() {
 	// TODO - is there a less retarded way to do all of this?
 	// the assembly for the following looks about as you would expect
 
-	peri.PORTA.pin0ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin1ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin2ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin3ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin4ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin5ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin6ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTA.pin7ctrl.write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin0ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin1ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin2ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin3ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin4ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin5ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin6ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTA.pin7ctrl().write(|reg| reg.pullupen().set_bit());
 
-	peri.PORTB.pin0ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTB.pin1ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTB.pin2ctrl.write(|reg| reg.pullupen().set_bit());
-	peri.PORTB.pin3ctrl.write(|reg| reg.pullupen().set_bit());
+	peri.PORTB.pin0ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTB.pin1ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTB.pin2ctrl().write(|reg| reg.pullupen().set_bit());
+	peri.PORTB.pin3ctrl().write(|reg| reg.pullupen().set_bit());
 }
 
 /// Enters sleep mode. Will wake up with the next interrupt.
 pub fn sleep() {
 	// Enable standby mode
 	
-	peri().SLPCTRL.ctrla.write(|reg| reg
+	peri().SLPCTRL.ctrla().write(|reg| reg
 		.smode().stdby()
 		.sen().set_bit());
 

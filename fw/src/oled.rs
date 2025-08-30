@@ -86,8 +86,8 @@ impl Oled {
 
 		// Enable power to the display
 
-		port.dirset.write(|reg| reg.pa4().set_bit());
-		port.outset.write(|reg| reg.pa4().set_bit());
+		port.dirset().write(|reg| reg.pa4().set_bit());
+		port.outset().write(|reg| reg.pa4().set_bit());
 
 		delay(50); // Good enough
 
@@ -158,7 +158,7 @@ impl Drop for Oled {
 	fn drop(&mut self) {
 		// Turn off the display
 
-		peri().PORTA.outclr.write(|reg| reg.pa4().set_bit());
+		peri().PORTA.outclr().write(|reg| reg.pa4().set_bit());
 	}
 }
 

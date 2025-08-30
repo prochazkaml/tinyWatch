@@ -49,9 +49,9 @@ impl Buttons {
 		
 		let peri = peri();
 
-		peri.PORTA.pin5ctrl.modify(|_, reg| reg.isc().bothedges());
-		peri.PORTA.pin6ctrl.modify(|_, reg| reg.isc().bothedges());
-		peri.PORTA.pin7ctrl.modify(|_, reg| reg.isc().bothedges());
+		peri.PORTA.pin5ctrl().modify(|_, reg| reg.isc().bothedges());
+		peri.PORTA.pin6ctrl().modify(|_, reg| reg.isc().bothedges());
+		peri.PORTA.pin7ctrl().modify(|_, reg| reg.isc().bothedges());
 
 		Self {
 			buttons: [Button::default(); 3]
@@ -59,7 +59,7 @@ impl Buttons {
 	}
 
 	pub fn update(&mut self) {
-		let inputs = peri().PORTA.in_.read();
+		let inputs = peri().PORTA.in_().read();
 
 		self.buttons[0].update(inputs.pa5().bit_is_clear());
 		self.buttons[1].update(inputs.pa6().bit_is_clear());
@@ -87,9 +87,9 @@ impl Buttons {
 	}
 }
 
-#[avr_device::interrupt(attiny1614)]
+#[avr_device::interrupt(attiny3224)]
 fn PORTA_PORT() {
-	peri().PORTA.intflags.write(|reg| reg
+	peri().PORTA.intflags().write(|reg| reg
 		.pa5().set_bit()
 		.pa6().set_bit()
 		.pa7().set_bit());

@@ -1711,7 +1711,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "MCU_Microchip_ATtiny:ATtiny1614-SS"
+		(symbol "MCU_Microchip_ATtiny:ATtiny3224-SS"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -1724,7 +1724,7 @@
 					(justify left bottom)
 				)
 			)
-			(property "Value" "ATtiny1614-SS"
+			(property "Value" "ATtiny3224-SS"
 				(at 2.54 -16.51 0)
 				(effects
 					(font
@@ -1743,7 +1743,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "http://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny1614-data-sheet-40001995A.pdf"
+			(property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny3224-3226-3227-Data-Sheet-DS40002345A.pdf"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1752,7 +1752,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "20MHz, 16kB Flash, 2kB SRAM, 256B EEPROM, SOIC-14"
+			(property "Description" "20MHz, 32kB Flash, 3kB SRAM, 256B EEPROM, SOIC-14"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1779,7 +1779,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "ATtiny1614-SS_0_1"
+			(symbol "ATtiny3224-SS_0_1"
 				(rectangle
 					(start -12.7 -15.24)
 					(end 12.7 15.24)
@@ -1792,7 +1792,7 @@
 					)
 				)
 			)
-			(symbol "ATtiny1614-SS_1_1"
+			(symbol "ATtiny3224-SS_1_1"
 				(pin bidirectional line
 					(at -15.24 10.16 0)
 					(length 2.54)
@@ -4266,113 +4266,6 @@
 		)
 	)
 	(symbol
-		(lib_id "MCU_Microchip_ATtiny:ATtiny1614-SS")
-		(at 101.6 78.74 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "3f9c68d9-8275-4825-8561-754d50d68e25")
-		(property "Reference" "U1"
-			(at 103.6194 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "ATtiny1614-SS"
-			(at 103.6194 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 101.6 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny1614-data-sheet-40001995A.pdf"
-			(at 101.6 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 101.6 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "737b9fce-020f-49c9-803f-e92861f191db")
-		)
-		(pin "10"
-			(uuid "025cefad-d932-4b71-941f-645733f0f14b")
-		)
-		(pin "11"
-			(uuid "a9710f76-1b7e-4acd-9e48-93ae176fe87b")
-		)
-		(pin "12"
-			(uuid "b07c9aea-0902-4e34-8376-da44cc876d3d")
-		)
-		(pin "13"
-			(uuid "12f6b97a-450b-444b-9702-39e4a459863b")
-		)
-		(pin "14"
-			(uuid "0083f4a8-7d18-4606-9775-413eb6178c34")
-		)
-		(pin "2"
-			(uuid "9cdbdcc9-451d-41ce-adcf-20c004e5fd69")
-		)
-		(pin "3"
-			(uuid "1b0cbb85-2bbc-488b-a957-b20173021854")
-		)
-		(pin "4"
-			(uuid "54aa1a39-8820-4b45-b0a9-c92ebbc75046")
-		)
-		(pin "5"
-			(uuid "a49471fa-219a-43e1-b1df-00be373619a0")
-		)
-		(pin "6"
-			(uuid "c44a151b-1769-4ad6-b357-c139da09b06c")
-		)
-		(pin "7"
-			(uuid "5249c11c-30e3-4688-ad2b-95acccc5f2eb")
-		)
-		(pin "8"
-			(uuid "b368a0f0-ed74-4412-b8d7-9f249d92b907")
-		)
-		(pin "9"
-			(uuid "f1b5f7e8-fe13-4e1a-a617-32c23c90fe3a")
-		)
-		(instances
-			(project ""
-				(path "/645abe9d-7b27-45bb-9d9d-6ce483163c39"
-					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:VCCQ")
 		(at 116.84 78.74 270)
 		(unit 1)
@@ -5922,6 +5815,113 @@
 			(project ""
 				(path "/645abe9d-7b27-45bb-9d9d-6ce483163c39"
 					(reference "C8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "MCU_Microchip_ATtiny:ATtiny3224-SS")
+		(at 101.6 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "92e421a7-a2b2-4fc6-aa3d-2e9e3fff826f")
+		(property "Reference" "U1"
+			(at 103.7433 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "ATtiny3224-SS"
+			(at 103.7433 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 101.6 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny3224-3226-3227-Data-Sheet-DS40002345A.pdf"
+			(at 101.6 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "20MHz, 32kB Flash, 3kB SRAM, 256B EEPROM, SOIC-14"
+			(at 101.6 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "13"
+			(uuid "eb718d39-6bda-4ffc-88fe-4839c3d1ea32")
+		)
+		(pin "11"
+			(uuid "92fc84fc-b821-4577-9b48-441b0cd8d63a")
+		)
+		(pin "12"
+			(uuid "b60167bf-a776-4472-9f39-d566d517e21b")
+		)
+		(pin "4"
+			(uuid "854534f2-cc41-4608-8bb7-b51d0a64214e")
+		)
+		(pin "3"
+			(uuid "f10bcd18-bf0a-4374-a47a-4d0b1f4a53e8")
+		)
+		(pin "7"
+			(uuid "f51c6f7b-3fda-4acf-a9dc-447713fc2917")
+		)
+		(pin "2"
+			(uuid "a30d12ba-1b4e-4641-be08-de1e3583fb9d")
+		)
+		(pin "10"
+			(uuid "edf1ed69-531f-4be5-a638-a2b79dbb2537")
+		)
+		(pin "1"
+			(uuid "57dd3c2b-24c3-4965-9120-8a0f11292951")
+		)
+		(pin "6"
+			(uuid "5acb4065-3b52-4118-8a32-218900a21a6c")
+		)
+		(pin "8"
+			(uuid "5ca2554f-a973-45ed-a320-5bf0835a57b0")
+		)
+		(pin "9"
+			(uuid "7635ad2c-cfb8-4c58-b96d-504cb19d74b0")
+		)
+		(pin "5"
+			(uuid "e57c9331-0279-4f1c-9ee4-ea38e94047f6")
+		)
+		(pin "14"
+			(uuid "8a4613f5-2ea5-45d1-b2ee-b0e4cfcdb8f2")
+		)
+		(instances
+			(project ""
+				(path "/645abe9d-7b27-45bb-9d9d-6ce483163c39"
+					(reference "U1")
 					(unit 1)
 				)
 			)
